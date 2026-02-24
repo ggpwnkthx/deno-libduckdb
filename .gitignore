@@ -1,0 +1,6 @@
+/lib*
+/gen*
+.env
+duck.db
+gpt.ts
+deno-duckdb-repo.json

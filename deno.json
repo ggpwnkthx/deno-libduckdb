@@ -1,0 +1,17 @@
+{
+  "version": "1.4.4",
+  "lock": false,
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1",
+    "@ggpwnkthx/libclang": "jsr:@ggpwnkthx/libclang@^1"
+  },
+  "tasks": {
+    "download": "deno run -A tools/download.ts",
+    "generate": "deno run -A tools/generate.ts",
+    "test": "deno test -A tests/*",
+    "build": "deno task download && deno task generate && deno fmt src/ffi.ts && deno lint --fix src/ffi.ts && deno check src/ffi.ts && deno task test"
+  },
+  "compilerOptions": {
+    "strict": true
+  }
+}
