@@ -6,18 +6,18 @@
  */
 
 import {
+  collectDeclarations,
+  type CollectedData,
   createIndex,
   disposeIndex,
+  type FFIType,
   getDiagnostic,
   getDiagnosticSeverity,
   getDiagnosticSpelling,
   getNumDiagnostics,
   load,
-  parseTranslationUnit,
-  collectDeclarations,
-  type CollectedData,
-  type FFIType,
   makeTSafeName,
+  parseTranslationUnit,
   type StructField,
 } from "@ggpwnkthx/libclang";
 import {
@@ -25,7 +25,7 @@ import {
   DUCKDB_HANDLE_PARAMS,
   DUCKDB_HANDLE_TYPES,
   DUCKDB_TYPE_MAPPINGS,
-} from "../src/ffi_config.ts";
+} from "../src/config.ts";
 
 interface CliArgs {
   header: string;

@@ -73,7 +73,7 @@ export async function getRelease(version: string): Promise<Release> {
 }
 
 /** Find matching asset in release */
-export function findAsset(
+function findAsset(
   release: Release,
   platform: string,
   arch: string,
@@ -112,7 +112,7 @@ export function findAsset(
 }
 
 /** Download file to path */
-export async function downloadFile(
+async function downloadFile(
   url: string,
   destPath: string,
 ): Promise<void> {
@@ -137,7 +137,7 @@ export async function downloadFile(
 }
 
 /** Extract ZIP file */
-export async function extractZip(
+async function extractZip(
   zipPath: string,
   outputDir: string,
 ): Promise<string> {
@@ -161,7 +161,7 @@ export async function extractZip(
 }
 
 /** Extract gz file */
-export async function extractGz(
+async function extractGz(
   gzPath: string,
   outputDir: string,
 ): Promise<string> {
@@ -185,7 +185,7 @@ export async function extractGz(
 }
 
 /** List all extracted files and find library */
-export function listExtractedFiles(
+function listExtractedFiles(
   outputDir: string,
 ): { library: string | null; files: string[] } {
   const allFiles: string[] = [];
@@ -238,7 +238,7 @@ export function listExtractedFiles(
   return { library, files: allFiles };
 }
 
-export interface DownloadOptions {
+interface DownloadOptions {
   output?: string;
   version?: string;
   platform?: string;

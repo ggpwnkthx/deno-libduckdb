@@ -71,15 +71,3 @@ export const DUCKDB_HANDLE_PARAMS = [
   "connection",
   "result",
 ] as const;
-
-// Default buffer types for CLI
-export const DEFAULT_BUFFERS = [
-  "uint8_t",
-  "unsigned char",
-  "uint16_t",
-  "unsigned short",
-  "uint32_t",
-  "unsigned int",
-  "uint64_t",
-  "unsigned long long",
-] as const;
