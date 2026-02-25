@@ -1,6 +1,6 @@
 {
   "name": "@ggpwnkthx/libduckdb",
-  "version": "1.4.4",
+  "version": "1.4.4-a",
   "exports": "./mod.ts",
   "lock": false,
   "imports": {
