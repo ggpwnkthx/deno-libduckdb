@@ -8,7 +8,7 @@ import {
   getPlatformLibName,
   pathExists,
 } from "@ggpwnkthx/libclang";
-import { open as openFFI, type symbols as symbolDefs } from "./ffi.ts";
+import { symbols, type symbols as symbolDefs } from "./ffi.ts";
 import { DEFAULT_OUTPUT_DIR, download } from "./download.ts";
 
 /**
@@ -106,7 +106,7 @@ export async function loadDuckDB(
   }
 
   try {
-    return openFFI(actualPath);
+    return Deno.dlopen(actualPath, symbols);
   } catch (e) {
     throw new Error(`Failed to load DuckDB from ${actualPath}: ${e}`);
   }
