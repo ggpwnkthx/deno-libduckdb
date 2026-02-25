@@ -1923,4 +1923,4 @@ export const symbols = {
     parameters: ["pointer", "pointer", "buffer"],
     result: "pointer",
   },
-} as const satisfies Deno.ForeignLibraryInterface;
+} as const;

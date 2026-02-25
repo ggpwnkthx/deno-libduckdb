@@ -230,7 +230,7 @@ export function generateDuckDBOutput(data: CollectedData): string {
     lines.push(`    result: ${returnType},`);
     lines.push(`  },`);
   }
-  lines.push("} as const satisfies Deno.ForeignLibraryInterface;");
+  lines.push("} as const;");
   lines.push("");
 
   return lines.join("\n");
