@@ -4,11 +4,16 @@
  * Core downloading and extraction logic that can be used programmatically.
  */
 
+import { dirname, join } from "@std/path";
+
 export const DEFAULT_OUTPUT_DIR = `${Deno.cwd()}/libduckdb`;
 
 /** Read DuckDB version from deno.json */
 export async function getDuckDBVersion(): Promise<string> {
-  const denoJsonPath = new URL(`../deno.json`, import.meta.url);
+  const srcDir = import.meta.dirname!;
+  const rootDir = dirname(srcDir);
+  const denoJsonPath = join(rootDir, "deno.json");
+  console.log({ srcDir, rootDir, denoJsonPath });
   const content = await Deno.readTextFile(denoJsonPath);
   const config = JSON.parse(content);
   return config.duckdb?.version;
