@@ -111,7 +111,7 @@ function findAsset(
   return null;
 }
 
-/** Download file to path */
+/** Download file to path with basic validation */
 async function downloadFile(
   url: string,
   destPath: string,
@@ -123,17 +123,104 @@ async function downloadFile(
     );
   }
 
+  // Validate Content-Type is a valid archive format
+  const contentType = response.headers.get("content-type");
+  if (
+    contentType &&
+    !contentType.includes("zip") &&
+    !contentType.includes("octet-stream") &&
+    !contentType.includes("gzip")
+  ) {
+    // Could be HTML error page - log warning but proceed
+    console.warn(`Unexpected Content-Type: ${contentType}`);
+  }
+
+  // Get expected size if available
+  const contentLength = response.headers.get("content-length");
+
   const file = await Deno.open(destPath, { create: true, write: true });
+  let bytesWritten = 0;
+
   await response.body?.pipeTo(
     new WritableStream({
-      write(chunk) {
-        file.write(chunk);
+      async write(chunk) {
+        await file.write(chunk);
+        bytesWritten += chunk.length;
       },
       close() {
         file.close();
       },
     }),
   );
+
+  // Validate size if Content-Length was provided
+  if (contentLength && parseInt(contentLength) !== bytesWritten) {
+    throw new Error(
+      `Downloaded file size mismatch: expected ${contentLength}, got ${bytesWritten}`,
+    );
+  }
+}
+
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 1000;
+
+/** Download with retry logic */
+async function downloadWithRetry(
+  url: string,
+  destPath: string,
+  attempt = 1,
+): Promise<void> {
+  try {
+    await downloadFile(url, destPath);
+  } catch (error) {
+    if (attempt >= MAX_RETRIES) {
+      throw error;
+    }
+    console.warn(
+      `Download attempt ${attempt} failed, retrying in ${
+        RETRY_DELAY_MS * attempt
+      }ms...`,
+    );
+    await new Promise((resolve) =>
+      setTimeout(resolve, RETRY_DELAY_MS * attempt)
+    );
+    await downloadWithRetry(url, destPath, attempt + 1);
+  }
+}
+
+/** Validate downloaded file is actually a ZIP or gzip archive */
+async function validateArchive(archivePath: string): Promise<void> {
+  const fileInfo = await Deno.stat(archivePath);
+
+  // File too small to be valid - could be error page
+  if (fileInfo.size < 1000) {
+    const content = await Deno.readTextFile(archivePath);
+    if (content.includes("<html") || content.includes("<!DOCTYPE")) {
+      throw new Error(
+        `Downloaded file is HTML, not a ZIP. Check GitHub API rate limits.`,
+      );
+    }
+  }
+
+  // Validate ZIP signature (PK\x03\x04) or gzip signature (0x1f 0x8b)
+  const header = new Uint8Array(4);
+  const file = await Deno.open(archivePath);
+  await file.read(header);
+  await file.close();
+
+  const isZip = header[0] === 0x50 &&
+    header[1] === 0x4B &&
+    header[2] === 0x03 &&
+    header[3] === 0x04;
+  const isGzip = header[0] === 0x1f && header[1] === 0x8b;
+
+  if (!isZip && !isGzip) {
+    throw new Error(
+      `Downloaded file is not a valid ZIP or gzip archive. File header: ${
+        header[0].toString(16)
+      } ${header[1].toString(16)}`,
+    );
+  }
 }
 
 /** Extract ZIP file */
@@ -270,12 +357,15 @@ export async function download(options: DownloadOptions = {}): Promise<string> {
     );
   }
 
-  // Download
+  // Download with retry
   const tempDir = await Deno.makeTempDir();
   const ext = downloadUrl.endsWith(".gz") ? ".gz" : ".zip";
   const archivePath = `${tempDir}/duckdb${ext}`;
 
-  await downloadFile(downloadUrl, archivePath);
+  await downloadWithRetry(downloadUrl, archivePath);
+
+  // Validate downloaded file is a valid archive
+  await validateArchive(archivePath);
 
   // Extract
   let libraryPath: string;
