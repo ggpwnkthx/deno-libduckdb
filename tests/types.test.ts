@@ -3,13 +3,13 @@
  */
 
 import { assertEquals, assertExists } from "@std/assert";
-import { loadDuckDB } from "@ggpwnkthx/libduckdb";
+import { load } from "@ggpwnkthx/libduckdb";
 import { cleanup, createTestDB, runQuery } from "./helpers/ffi.ts";
 
 Deno.test({
   name: "duckdb - value extraction: blob",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Create blob from hex string
@@ -33,7 +33,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: date",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(
@@ -61,7 +61,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: time",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(
@@ -88,7 +88,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: timestamp",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(
@@ -115,7 +115,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: interval",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(
@@ -142,7 +142,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: hugeint",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(
@@ -169,7 +169,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: decimal",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(
@@ -197,7 +197,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: uint8",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(ctx, "SELECT 255::UTINYINT AS value");
@@ -213,7 +213,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: uint16",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(ctx, "SELECT 65535::USMALLINT AS value");
@@ -229,7 +229,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: int8",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Use a valid int8 value (range -128 to 127)
@@ -246,7 +246,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: int16",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Use a valid int16 value (range -32768 to 32767)
@@ -263,7 +263,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: list",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(
@@ -287,7 +287,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: struct",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(
@@ -311,7 +311,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: map",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(
@@ -335,7 +335,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: uint32",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(ctx, "SELECT 4294967295::UINTEGER AS value");
@@ -351,7 +351,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: uint64",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(
@@ -370,7 +370,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: int64",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(

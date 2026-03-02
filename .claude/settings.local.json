@@ -18,7 +18,9 @@
       "Bash(ldconfig:*)",
       "Bash(clang-20:*)",
       "Bash(find:*)",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(git:*)",
+      "Bash(head:*)"
     ]
   },
   "hooks": {

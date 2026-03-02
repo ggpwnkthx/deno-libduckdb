@@ -6,12 +6,12 @@
 
 export const DEFAULT_OUTPUT_DIR = `${Deno.cwd()}/libduckdb`;
 
-/** Read version from deno.json */
-export async function getVersion(): Promise<string> {
+/** Read DuckDB version from deno.json */
+export async function getDuckDBVersion(): Promise<string> {
   const denoJsonPath = new URL(`${Deno.cwd()}/deno.json`, import.meta.url);
   const content = await Deno.readTextFile(denoJsonPath);
   const config = JSON.parse(content);
-  return config.version;
+  return config.duckdb?.version;
 }
 
 /** Map Deno build OS to DuckDB platform string */
@@ -252,7 +252,7 @@ export async function download(options: DownloadOptions = {}): Promise<string> {
   const outputDir = options.output ?? DEFAULT_OUTPUT_DIR;
 
   // Get version from deno.json or use provided version
-  const version = options.version ?? await getVersion();
+  const version = options.version ?? await getDuckDBVersion();
 
   // Determine platform and arch (use provided or detect)
   const platform = options.platform ?? getPlatform();

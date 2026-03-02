@@ -1,6 +1,9 @@
 {
   "name": "@ggpwnkthx/libduckdb",
-  "version": "1.4.4-a",
+  "version": "1.0.3",
+  "duckdb": {
+    "version": "1.4.4"
+  },
   "exports": "./mod.ts",
   "lock": false,
   "imports": {
@@ -11,7 +14,7 @@
     "download": "deno run -A tools/download.ts",
     "generate": "deno run -A tools/generate.ts",
     "test": "deno test -A",
-    "build": "deno task download && deno task generate && deno fmt src/ffi.ts && deno lint --fix src/ffi.ts && deno check src/ffi.ts && deno task test"
+    "build": "deno task download && deno task generate && deno fmt src/ffi/* && deno lint --fix src/ffi/* && deno check src/ffi/* && deno task test"
   },
   "compilerOptions": {
     "strict": true

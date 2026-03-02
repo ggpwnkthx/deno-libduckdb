@@ -3,13 +3,13 @@
  */
 
 import { assertEquals, assertExists } from "@std/assert";
-import { loadDuckDB } from "@ggpwnkthx/libduckdb";
+import { load } from "@ggpwnkthx/libduckdb";
 import { cleanup, createTestDB, runQuery } from "./helpers/ffi.ts";
 
 Deno.test({
   name: "duckdb - duckdb_rows_changed",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Create table
@@ -37,7 +37,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - duckdb_column_data",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const result = runQuery(ctx, "SELECT 42 AS value");
@@ -58,7 +58,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - duckdb_nullmask_data",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Query with no nulls
@@ -80,7 +80,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - multiple connections",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
 
     // Create first database and connection
     const dbPtrBuf1 = new Uint8Array(8);
@@ -134,7 +134,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - result with large integers",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Test with large integers using UBIGINT to avoid signed overflow
@@ -155,7 +155,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - multiple queries in sequence",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Run multiple queries in sequence
@@ -183,7 +183,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - query with NULL values in result",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Use a simple NULL query
@@ -205,7 +205,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - empty result set",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const result = runQuery(ctx, "SELECT * FROM (SELECT 1) AS t WHERE 1=0");
@@ -225,7 +225,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - column type detection",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Test integer type

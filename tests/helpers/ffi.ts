@@ -4,7 +4,7 @@
  * Shared helpers for DuckDB FFI testing to reduce duplication across test files.
  */
 
-import type { symbols } from "../../src/ffi.ts";
+import type { symbols } from "../../src/ffi/symbols.ts";
 
 /**
  * Context object containing a loaded DuckDB library and resources

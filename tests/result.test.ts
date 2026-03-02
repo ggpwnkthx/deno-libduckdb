@@ -3,13 +3,13 @@
  */
 
 import { assertEquals, assertExists } from "@std/assert";
-import { loadDuckDB } from "@ggpwnkthx/libduckdb";
+import { load } from "@ggpwnkthx/libduckdb";
 import { cleanup, createTestDB, runQuery } from "./helpers/ffi.ts";
 
 Deno.test({
   name: "duckdb - value extraction: int32",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(ctx, "SELECT 42 AS value");
@@ -30,7 +30,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: int64",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(
@@ -49,7 +49,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: uint32",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(ctx, "SELECT 4294967295::UINTEGER AS value");
@@ -65,7 +65,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: uint64",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(
@@ -84,7 +84,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: float",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(ctx, "SELECT 3.14::FLOAT AS value");
@@ -101,7 +101,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: double",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(ctx, "SELECT 3.14159265358979::DOUBLE AS value");
@@ -117,7 +117,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: varchar",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(ctx, "SELECT 'hello world' AS value");
@@ -138,7 +138,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: boolean",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(ctx, "SELECT TRUE AS value");
@@ -160,7 +160,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: null handling",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(ctx, "SELECT NULL AS value");
@@ -177,7 +177,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - column metadata: column_name",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(ctx, "SELECT 42 AS my_column");
@@ -195,7 +195,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - column metadata: column_type",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const resultBuf = runQuery(ctx, "SELECT 42 AS value");
@@ -212,7 +212,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - column_count and row_count",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Multiple rows and columns
@@ -232,7 +232,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - value extraction: multiple rows",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Use range function to generate multiple rows

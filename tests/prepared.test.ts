@@ -3,13 +3,13 @@
  */
 
 import { assertEquals } from "@std/assert";
-import { loadDuckDB } from "@ggpwnkthx/libduckdb";
+import { load } from "@ggpwnkthx/libduckdb";
 import { cleanup, createTestDB } from "./helpers/ffi.ts";
 
 Deno.test({
   name: "duckdb - prepare: create and destroy statement",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Prepare a simple query

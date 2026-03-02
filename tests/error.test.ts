@@ -3,13 +3,13 @@
  */
 
 import { assertEquals, assertExists } from "@std/assert";
-import { loadDuckDB } from "@ggpwnkthx/libduckdb";
+import { load } from "@ggpwnkthx/libduckdb";
 import { cleanup, createTestDB } from "./helpers/ffi.ts";
 
 Deno.test({
   name: "duckdb - error: result_error on failed query",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Execute an invalid query
@@ -55,7 +55,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - error: no error on success",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Execute a valid query

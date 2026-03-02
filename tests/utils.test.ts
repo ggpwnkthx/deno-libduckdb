@@ -4,12 +4,12 @@
 
 import { assertEquals, assertExists } from "@std/assert";
 import * as download from "../src/download.ts";
-import * as library from "../src/library.ts";
+import * as library from "../src/mod.ts";
 
 Deno.test({
-  name: "utils - download: getVersion",
+  name: "utils - download: getDuckDBVersion",
   async fn() {
-    const version = await download.getVersion();
+    const version = await download.getDuckDBVersion();
     assertExists(version);
     // Version should be in format like "1.4.4"
     assertEquals(version.match(/^\d+\.\d+\.\d+$/) !== null, true);
@@ -39,10 +39,10 @@ Deno.test({
 });
 
 Deno.test({
-  name: "utils - library: loadDuckDB",
+  name: "utils - library: load",
   async fn() {
-    // Test that loadDuckDB returns a library object
-    const lib = await library.loadDuckDB();
+    // Test that load returns a library object
+    const lib = await library.load();
     assertExists(lib);
     assertExists(lib.symbols);
     assertExists(lib.symbols.duckdb_library_version);
@@ -55,7 +55,7 @@ Deno.test({
 Deno.test({
   name: "utils - library: getVersion",
   async fn() {
-    const lib = await library.loadDuckDB();
+    const lib = await library.load();
     const version = library.getVersion(lib);
     assertExists(version);
     // Version should be non-empty string

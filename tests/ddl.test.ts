@@ -3,13 +3,13 @@
  */
 
 import { assertEquals } from "@std/assert";
-import { loadDuckDB } from "@ggpwnkthx/libduckdb";
+import { load } from "@ggpwnkthx/libduckdb";
 import { cleanup, createTestDB, runQuery } from "./helpers/ffi.ts";
 
 Deno.test({
   name: "duckdb - DDL: CREATE TABLE",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Create a table
@@ -33,7 +33,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - DDL: INSERT INTO",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Create table
@@ -60,7 +60,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - DDL: INSERT multiple rows",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Create table
@@ -92,7 +92,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - DDL: SELECT with WHERE clause",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Create and populate table
@@ -127,7 +127,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - DDL: DELETE",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Create and populate table
@@ -154,7 +154,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - DDL: UPDATE",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Create and populate table
@@ -182,7 +182,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - DDL: ALTER TABLE (ADD COLUMN)",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Create table
@@ -211,7 +211,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - DDL: DROP TABLE",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Create and drop table

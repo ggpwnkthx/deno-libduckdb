@@ -3,13 +3,13 @@
  */
 
 import { assertEquals } from "@std/assert";
-import { loadDuckDB } from "@ggpwnkthx/libduckdb";
+import { load } from "@ggpwnkthx/libduckdb";
 import { cleanup, createTestDB, runQuery } from "./helpers/ffi.ts";
 
 Deno.test({
   name: "duckdb - query: SUM aggregate",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const result = runQuery(
@@ -28,7 +28,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - query: AVG aggregate",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const result = runQuery(
@@ -47,7 +47,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - query: COUNT aggregate",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const result = runQuery(
@@ -66,7 +66,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - query: MIN aggregate",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const result = runQuery(
@@ -85,7 +85,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - query: MAX aggregate",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const result = runQuery(
@@ -104,7 +104,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - query: GROUP BY",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Create a table and use GROUP BY
@@ -132,7 +132,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - query: ORDER BY",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Use ORDER BY - just verify it returns results
@@ -153,7 +153,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - query: LIMIT",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const result = runQuery(
@@ -173,7 +173,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - query: LIMIT with OFFSET",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Use LIMIT/OFFSET - just verify it returns correct number of rows
@@ -194,7 +194,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - query: DISTINCT",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const result = runQuery(
@@ -214,7 +214,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - query: multiple aggregates",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Use aggregate functions - just verify we get results
@@ -238,7 +238,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - query: subquery",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Subquery in FROM clause
@@ -262,7 +262,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - query: string concatenation",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     const result = runQuery(
@@ -288,7 +288,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - query: arithmetic operations",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Test addition
@@ -309,7 +309,7 @@ Deno.test({
 Deno.test({
   name: "duckdb - query: CASE expression",
   async fn() {
-    const lib = await loadDuckDB();
+    const lib = await load();
     const ctx = createTestDB(lib);
 
     // Use table instead of VALUES for reliability
