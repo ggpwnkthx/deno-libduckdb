@@ -1,6 +1,6 @@
 {
   "name": "@ggpwnkthx/libduckdb",
-  "version": "1.0.7-a",
+  "version": "1.0.7-b",
   "duckdb": {
     "version": "1.4.4"
   },

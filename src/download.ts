@@ -11,6 +11,7 @@ export const DEFAULT_OUTPUT_DIR = `${Deno.cwd()}/libduckdb`;
 /** Read DuckDB version from deno.json */
 export async function getDuckDBVersion(): Promise<string> {
   const srcDir = import.meta.dirname!;
+  console.log(srcDir)
   const rootDir = dirname(srcDir);
   const denoJsonPath = join(rootDir, "deno.json");
   console.log({ srcDir, rootDir, denoJsonPath });
