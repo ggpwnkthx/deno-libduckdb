@@ -4,21 +4,9 @@
  * Core downloading and extraction logic that can be used programmatically.
  */
 
-import { dirname, join } from "@std/path";
+import { DUCKDB_VERSION } from "./mod.ts";
 
 export const DEFAULT_OUTPUT_DIR = `${Deno.cwd()}/libduckdb`;
-
-/** Read DuckDB version from deno.json */
-export async function getDuckDBVersion(): Promise<string> {
-  const srcDir = import.meta.dirname!;
-  console.log(srcDir)
-  const rootDir = dirname(srcDir);
-  const denoJsonPath = join(rootDir, "deno.json");
-  console.log({ srcDir, rootDir, denoJsonPath });
-  const content = await Deno.readTextFile(denoJsonPath);
-  const config = JSON.parse(content);
-  return config.duckdb?.version;
-}
 
 /** Map Deno build OS to DuckDB platform string */
 export function getPlatform(): string {
@@ -345,7 +333,7 @@ export async function download(options: DownloadOptions = {}): Promise<string> {
   const outputDir = options.output ?? DEFAULT_OUTPUT_DIR;
 
   // Get version from deno.json or use provided version
-  const version = options.version ?? await getDuckDBVersion();
+  const version = options.version ?? DUCKDB_VERSION;
 
   // Determine platform and arch (use provided or detect)
   const platform = options.platform ?? getPlatform();

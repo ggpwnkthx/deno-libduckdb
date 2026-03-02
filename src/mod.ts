@@ -11,6 +11,8 @@ import {
 import { symbols } from "./ffi/symbols.ts";
 import { DEFAULT_OUTPUT_DIR, download } from "./download.ts";
 
+export const DUCKDB_VERSION = "1.4.4";
+
 /**
  * Find a library by searching common locations
  */

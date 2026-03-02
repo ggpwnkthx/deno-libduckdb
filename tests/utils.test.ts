@@ -7,9 +7,9 @@ import * as download from "../src/download.ts";
 import * as library from "../src/mod.ts";
 
 Deno.test({
-  name: "utils - download: getDuckDBVersion",
-  async fn() {
-    const version = await download.getDuckDBVersion();
+  name: "utils - DUCKDB_VERSION",
+  fn() {
+    const version = library.DUCKDB_VERSION;
     assertExists(version);
     // Version should be in format like "1.4.4"
     assertEquals(version.match(/^\d+\.\d+\.\d+$/) !== null, true);

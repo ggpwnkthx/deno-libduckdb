@@ -11,10 +11,10 @@ import {
   DEFAULT_OUTPUT_DIR,
   download,
   getArch,
-  getDuckDBVersion,
   getPlatform,
   getRelease,
 } from "../src/download.ts";
+import { DUCKDB_VERSION } from "../src/mod.ts";
 
 interface CliArgs {
   output?: string;
@@ -67,7 +67,7 @@ async function main() {
   console.log("======================");
 
   // Get version from deno.json
-  const version = await getDuckDBVersion();
+  const version = DUCKDB_VERSION;
   console.log(`Version: ${version}`);
 
   // Determine platform and arch
