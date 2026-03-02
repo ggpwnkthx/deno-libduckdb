@@ -15,7 +15,8 @@ import { collectStructs, generateStructsTS } from "./structs.ts";
 import { collectFunctions, generateSymbolsTS } from "./symbols.ts";
 
 /**
- * Ensure the output directory exists
+ * Ensure the output directory exists.
+ * @param path - The directory path to create
  */
 async function ensureOutputDir(path: string): Promise<void> {
   try {

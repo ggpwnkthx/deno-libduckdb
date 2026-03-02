@@ -130,7 +130,19 @@ export function getVersion(
   return view.getCString();
 }
 
-/** Convert a C string pointer to a JavaScript string */
-export { cstringToPtr, ptrToCString } from "@ggpwnkthx/libclang";
-/** The DuckDB FFI symbols */
+/**
+ * Convert a C string pointer to a JavaScript string.
+ * @param ptr - Pointer to the C string
+ * @returns JavaScript string
+ */
+export { cstringToPtr } from "@ggpwnkthx/libclang";
+
+/**
+ * Convert a JavaScript string to a C string pointer.
+ * @param str - JavaScript string to convert
+ * @returns Pointer to the C string
+ */
+export { ptrToCString } from "@ggpwnkthx/libclang";
+
+/** The DuckDB FFI function symbols loaded from the native library */
 export { symbols };

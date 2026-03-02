@@ -9,7 +9,9 @@ import { DUCKDB_VERSION } from "./mod.ts";
 /** Default directory where DuckDB native library is downloaded */
 export const DEFAULT_OUTPUT_DIR = `${Deno.cwd()}/libduckdb`;
 
-/** Map Deno build OS to DuckDB platform string */
+/** Map Deno build OS to DuckDB platform string
+ * @returns The DuckDB platform string (linux, osx, or windows)
+ */
 export function getPlatform(): string {
   switch (Deno.build.os) {
     case "linux":
@@ -23,7 +25,9 @@ export function getPlatform(): string {
   }
 }
 
-/** Map Deno build arch to DuckDB arch string */
+/** Map Deno build arch to DuckDB arch string
+ * @returns The DuckDB arch string (amd64 or arm64)
+ */
 export function getArch(): string {
   switch (Deno.build.arch) {
     case "x86_64":
@@ -67,7 +71,12 @@ export async function getRelease(version: string): Promise<Release> {
   return response.json();
 }
 
-/** Find matching asset in release */
+/** Find matching asset in release
+ * @param release - The GitHub release object
+ * @param platform - The target platform (linux, osx, windows)
+ * @param arch - The target architecture (amd64, arm64)
+ * @returns The download URL of the matching asset, or null if not found
+ */
 function findAsset(
   release: Release,
   platform: string,
@@ -320,10 +329,17 @@ function listExtractedFiles(
   return { library, files: allFiles };
 }
 
+/**
+ * Options for downloading the DuckDB native library.
+ */
 interface DownloadOptions {
+  /** Output directory where the library will be downloaded (default: ./libduckdb) */
   output?: string;
+  /** DuckDB version to download (default: from DUCKDB_VERSION) */
   version?: string;
+  /** Target platform (linux, osx, windows) - auto-detected if not provided */
   platform?: string;
+  /** Target architecture (amd64, arm64) - auto-detected if not provided */
   arch?: string;
 }
 
