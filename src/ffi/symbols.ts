@@ -1,3 +1,6 @@
+/**
+ * DuckDB FFI function symbols
+ */
 import {
   buffer,
   duckdb_aggregate_combine_t,

@@ -267,6 +267,11 @@ export function generateSymbolsTS(
 ): string {
   const lines: string[] = [];
 
+  // Add header comment
+  lines.push("/**");
+  lines.push(" * DuckDB FFI function symbols");
+  lines.push(" */");
+
   // First pass: generate all symbol definitions and collect which types are actually used
   const usedTypedefNames = new Set<string>();
   const usedStructNames = new Set<string>();

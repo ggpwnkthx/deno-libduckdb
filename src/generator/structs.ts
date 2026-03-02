@@ -315,6 +315,11 @@ export function generateStructsTS(
 ): string {
   const lines: string[] = [];
 
+  // Add header comment
+  lines.push("/**");
+  lines.push(" * DuckDB struct types");
+  lines.push(" */");
+
   // Create a set of known struct names for quick lookup
   const knownStructNames = new Set(structs.keys());
 

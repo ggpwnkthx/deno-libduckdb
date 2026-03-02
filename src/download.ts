@@ -6,6 +6,7 @@
 
 import { DUCKDB_VERSION } from "./mod.ts";
 
+/** Default directory where DuckDB native library is downloaded */
 export const DEFAULT_OUTPUT_DIR = `${Deno.cwd()}/libduckdb`;
 
 /** Map Deno build OS to DuckDB platform string */

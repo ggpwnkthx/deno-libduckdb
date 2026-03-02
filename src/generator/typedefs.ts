@@ -88,7 +88,10 @@ export function collectTypedefs(children: Uint8Array[]): Map<string, string> {
 export function generateTypedefsTS(typedefs: Map<string, string>): string {
   const lines: string[] = [];
 
-  // Generate basic FFI type definitions first
+  // Header
+  lines.push("/**");
+  lines.push(" * Basic FFI types");
+  lines.push(" */");
   lines.push("// Basic FFI types");
   // Note: "void" is excluded because it's a reserved keyword in JS/TS
   const basicTypes = [
@@ -112,6 +115,10 @@ export function generateTypedefsTS(typedefs: Map<string, string>): string {
 
   // Add special enum typedefs that are used as return types
   // These are defined as "typedef enum" in C but need to be treated as typedefs
+  lines.push("");
+  lines.push("/**");
+  lines.push(" * DuckDB enum types (treated as typedefs for FFI)");
+  lines.push(" */");
   lines.push("// DuckDB enum types (treated as typedefs for FFI)");
   const enumTypedefs: [string, string][] = [
     ["duckdb_state", "u8"],
@@ -152,6 +159,10 @@ export function generateTypedefsTS(typedefs: Map<string, string>): string {
   const handleTypesList: string[] = [];
 
   // Generate named exports for each typedef
+  lines.push("");
+  lines.push("/**");
+  lines.push(" * DuckDB type definitions");
+  lines.push(" */");
   lines.push("// DuckDB type definitions");
   for (const [name, ffiType] of sortedTypedefs) {
     // Skip empty or whitespace-only names
@@ -180,6 +191,10 @@ export function generateTypedefsTS(typedefs: Map<string, string>): string {
   // Generate pointer-type constants for handle types
   // These are used for pointer-to-pointer parameters (e.g., duckdb_database *output)
   if (handleTypesList.length > 0) {
+    lines.push("");
+    lines.push("/**");
+    lines.push(" * Pointer types for handle types (used for out parameters)");
+    lines.push(" */");
     lines.push("// Pointer types for handle types (used for out parameters)");
     for (const name of handleTypesList) {
       lines.push(`export const ${name}_ptr = "buffer" as const;`);

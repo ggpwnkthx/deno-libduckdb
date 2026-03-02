@@ -11,6 +11,7 @@ import {
 import { symbols } from "./ffi/symbols.ts";
 import { DEFAULT_OUTPUT_DIR, download } from "./download.ts";
 
+/** The DuckDB version this binding targets */
 export const DUCKDB_VERSION = "1.4.4";
 
 /**
@@ -129,6 +130,7 @@ export function getVersion(
   return view.getCString();
 }
 
-// Re-export from shared utils for backwards compatibility
+/** Convert a C string pointer to a JavaScript string */
 export { cstringToPtr, ptrToCString } from "@ggpwnkthx/libclang";
-export { symbols }
+/** The DuckDB FFI symbols */
+export { symbols };

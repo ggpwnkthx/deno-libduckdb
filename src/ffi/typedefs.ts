@@ -1,3 +1,6 @@
+/**
+ * Basic FFI types
+ */
 // Basic FFI types
 export const i8 = "i8" as const;
 export const u8 = "u8" as const;
@@ -12,10 +15,16 @@ export const f64 = "f64" as const;
 export const pointer = "pointer" as const;
 export const buffer = "buffer" as const;
 
+/**
+ * DuckDB enum types (treated as typedefs for FFI)
+ */
 // DuckDB enum types (treated as typedefs for FFI)
 export const duckdb_state = "u8" as const;
 export const duckdb_statement_type = "u8" as const;
 
+/**
+ * DuckDB type definitions
+ */
 // DuckDB type definitions
 export const duckdb_aggregate_combine_t = "pointer" as const;
 export const duckdb_aggregate_destroy_t = "pointer" as const;
@@ -112,6 +121,9 @@ export const uint_fast8_t = "u8" as const;
 export const uintptr_t = "u64" as const;
 export const wchar_t = "i32" as const;
 
+/**
+ * Pointer types for handle types (used for out parameters)
+ */
 // Pointer types for handle types (used for out parameters)
 export const duckdb_appender_ptr = "buffer" as const;
 export const duckdb_arrow_ptr = "buffer" as const;

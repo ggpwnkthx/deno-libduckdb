@@ -1,3 +1,6 @@
+/**
+ * DuckDB struct types
+ */
 export const duckdb_date: Deno.NativeStructType = {
   struct: ["i32"],
 };

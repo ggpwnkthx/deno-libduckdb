@@ -1,3 +1,6 @@
+/**
+ * DuckDB enum types
+ */
 export enum DUCKDB_TYPE {
   DUCKDB_TYPE_INVALID = 0,
   DUCKDB_TYPE_BOOLEAN = 1,

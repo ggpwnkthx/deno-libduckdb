@@ -148,6 +148,11 @@ export function collectEnums(children: Uint8Array[]): Map<string, EnumInfo> {
 export function generateEnumTS(enums: Map<string, EnumInfo>): string {
   const lines: string[] = [];
 
+  // Add header comment
+  lines.push("/**");
+  lines.push(" * DuckDB enum types");
+  lines.push(" */");
+
   // Enum types that are treated as typedefs instead
   const enumTypedefs = new Set(["duckdb_state", "duckdb_statement_type"]);
 
