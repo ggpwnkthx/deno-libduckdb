@@ -356,6 +356,12 @@ export function generateSymbolsTS(
       ? `[${paramTypes.join(", ")}]`
       : "[]";
 
+    // Add JSDoc comment for this function
+    const paramsDesc = func.parameters.map((p) => `${p.name}: ${p.type}`).join(
+      ", ",
+    );
+    const jsdoc = `/** ${func.name}(${paramsDesc}): ${func.returnType} */`;
+    symbolLines.push(jsdoc);
     symbolLines.push(`  ${func.name}: {`);
     symbolLines.push(`    parameters: ${paramsStr},`);
     symbolLines.push(`    result: ${resultType},`);

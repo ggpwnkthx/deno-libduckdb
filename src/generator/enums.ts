@@ -162,9 +162,13 @@ export function generateEnumTS(enums: Map<string, EnumInfo>): string {
       continue;
     }
 
+    // Add JSDoc for this enum type
+    lines.push(`/** ${name}: DuckDB ${name.replace("duckdb_", "")} enum */`);
     lines.push(`export enum ${name} {`);
 
     for (const value of enumInfo.values) {
+      // Add JSDoc for each enum value
+      lines.push(`  /** ${value.name} = ${value.value} */`);
       lines.push(`  ${value.name} = ${value.value},`);
     }
 

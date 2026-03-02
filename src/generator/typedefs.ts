@@ -89,9 +89,6 @@ export function generateTypedefsTS(typedefs: Map<string, string>): string {
   const lines: string[] = [];
 
   // Header
-  lines.push("/**");
-  lines.push(" * Basic FFI types");
-  lines.push(" */");
   lines.push("// Basic FFI types");
   // Note: "void" is excluded because it's a reserved keyword in JS/TS
   const basicTypes = [
@@ -109,6 +106,7 @@ export function generateTypedefsTS(typedefs: Map<string, string>): string {
     "buffer",
   ];
   for (const type of basicTypes) {
+    lines.push(`/** ${type} */`);
     lines.push(`export const ${type} = "${type}" as const;`);
   }
   lines.push("");
@@ -116,15 +114,15 @@ export function generateTypedefsTS(typedefs: Map<string, string>): string {
   // Add special enum typedefs that are used as return types
   // These are defined as "typedef enum" in C but need to be treated as typedefs
   lines.push("");
-  lines.push("/**");
-  lines.push(" * DuckDB enum types (treated as typedefs for FFI)");
-  lines.push(" */");
   lines.push("// DuckDB enum types (treated as typedefs for FFI)");
   const enumTypedefs: [string, string][] = [
     ["duckdb_state", "u8"],
     ["duckdb_statement_type", "u8"],
   ];
   for (const [name, ffiType] of enumTypedefs) {
+    lines.push(
+      `/** ${name}: DuckDB ${name.replace("duckdb_", "")} enum type */`,
+    );
     lines.push(`export const ${name} = "${ffiType}" as const;`);
   }
   lines.push("");
@@ -160,9 +158,6 @@ export function generateTypedefsTS(typedefs: Map<string, string>): string {
 
   // Generate named exports for each typedef
   lines.push("");
-  lines.push("/**");
-  lines.push(" * DuckDB type definitions");
-  lines.push(" */");
   lines.push("// DuckDB type definitions");
   for (const [name, ffiType] of sortedTypedefs) {
     // Skip empty or whitespace-only names
@@ -179,6 +174,8 @@ export function generateTypedefsTS(typedefs: Map<string, string>): string {
     // Sanitize name for valid identifier (replace invalid chars with underscores)
     const sanitizedName = name.replace(/[^a-zA-Z0-9_]/g, "_");
 
+    // Add JSDoc comment for this typedef
+    lines.push(`/** ${sanitizedName}: ${name} */`);
     lines.push(`export const ${sanitizedName} = "${finalType}" as const;`);
 
     // Track handle types for pointer variant generation
@@ -192,11 +189,11 @@ export function generateTypedefsTS(typedefs: Map<string, string>): string {
   // These are used for pointer-to-pointer parameters (e.g., duckdb_database *output)
   if (handleTypesList.length > 0) {
     lines.push("");
-    lines.push("/**");
-    lines.push(" * Pointer types for handle types (used for out parameters)");
-    lines.push(" */");
     lines.push("// Pointer types for handle types (used for out parameters)");
     for (const name of handleTypesList) {
+      lines.push(
+        `/** ${name}_ptr: Pointer type for ${name} (used for out parameters) */`,
+      );
       lines.push(`export const ${name}_ptr = "buffer" as const;`);
     }
     lines.push("");

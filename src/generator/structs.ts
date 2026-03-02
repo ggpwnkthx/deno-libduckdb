@@ -395,6 +395,8 @@ export function generateStructsTS(
     }
 
     if (fieldTypes.length > 0) {
+      // Add JSDoc for this struct
+      lines.push(`/** ${sanitizedName}: DuckDB ${name} struct */`);
       lines.push(`export const ${sanitizedName}: Deno.NativeStructType = {`);
       lines.push(`  struct: [${fieldTypes.join(", ")}],`);
       lines.push("};");
