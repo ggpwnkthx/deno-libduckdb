@@ -8,7 +8,7 @@ import {
   getPlatformLibName,
   pathExists,
 } from "@ggpwnkthx/libclang";
-import { symbols, type symbols as symbolDefs } from "./ffi/symbols.ts";
+import { symbols } from "./ffi/symbols.ts";
 import { DEFAULT_OUTPUT_DIR, download } from "./download.ts";
 
 /**
@@ -87,7 +87,7 @@ function findLibrary(
  */
 export async function load(
   libPath?: string,
-): Promise<Deno.DynamicLibrary<typeof symbolDefs>> {
+): Promise<Deno.DynamicLibrary<typeof symbols>> {
   let actualPath: string;
 
   if (libPath) {
@@ -118,7 +118,7 @@ export async function load(
  * @returns The DuckDB library version string
  */
 export function getVersion(
-  lib: Deno.DynamicLibrary<typeof symbolDefs>,
+  lib: Deno.DynamicLibrary<typeof symbols>,
 ): string {
   const versionPtr = lib.symbols.duckdb_library_version();
   if (!versionPtr) return "";
@@ -129,3 +129,4 @@ export function getVersion(
 
 // Re-export from shared utils for backwards compatibility
 export { cstringToPtr, ptrToCString } from "@ggpwnkthx/libclang";
+export { symbols }
