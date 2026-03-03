@@ -39,19 +39,24 @@ export function getArch(): string {
   }
 }
 
-/** GitHub release asset */
+/** GitHub release asset containing download information */
 export interface ReleaseAsset {
   name: string;
   browser_download_url: string;
 }
 
-/** GitHub release response */
+/** GitHub release response containing metadata and assets */
 export interface Release {
   html_url: string;
   assets: ReleaseAsset[];
 }
 
-/** Call GitHub API to get release info */
+/**
+ * Call GitHub API to get release info
+ *
+ * @param version - The DuckDB version to fetch (e.g., "1.4.4")
+ * @returns The GitHub release object with assets
+ */
 export async function getRelease(version: string): Promise<Release> {
   const url =
     `https://api.github.com/repos/duckdb/duckdb/releases/tags/v${version}`;

@@ -31,6 +31,8 @@ async function ensureOutputDir(path: string): Promise<void> {
 /**
  * Generate FFI bindings from DuckDB C header file.
  * Parses duckdb.h and generates TypeScript bindings in src/ffi/
+ *
+ * @returns A promise that resolves when generation is complete
  */
 export async function generate() {
   console.log("Loading libclang...");

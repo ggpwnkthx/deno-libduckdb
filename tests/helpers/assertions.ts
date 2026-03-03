@@ -24,6 +24,7 @@ export function assertSuccess(
  *
  * @param ptr - The pointer value to check
  * @param message - Optional custom error message
+ * @throws Error if the pointer is null or zero
  */
 export function assertValidPointer(
   ptr: bigint,
@@ -39,6 +40,7 @@ export function assertValidPointer(
  *
  * @param ptr - The pointer value to check
  * @param message - Optional custom error message
+ * @throws Error if the pointer is not null
  */
 export function assertNullPointer(
   ptr: bigint,

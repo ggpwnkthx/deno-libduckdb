@@ -16,6 +16,10 @@ export const DUCKDB_VERSION = "1.4.4";
 
 /**
  * Find a library by searching common locations
+ *
+ * @param libName - The name of the library to find (e.g., "libduckdb")
+ * @param customPaths - Optional array of custom paths to search first
+ * @returns The path to the library if found, or null if not found
  */
 function findLibrary(
   libName: string,

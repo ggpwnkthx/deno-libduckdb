@@ -29,6 +29,9 @@ export type ResultPtrBuf = Uint8Array<ArrayBuffer>;
 
 /**
  * Create a buffer for FFI calls
+ *
+ * @param size - The size of the buffer in bytes
+ * @returns A new Uint8Array buffer of the specified size
  */
 function createBuffer(size: number): Uint8Array<ArrayBuffer> {
   return new Uint8Array(new ArrayBuffer(size));
