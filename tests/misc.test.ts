@@ -57,7 +57,6 @@ Deno.test({
     assertExists(colDataPtr);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -79,7 +78,6 @@ Deno.test({
     assertExists(nullmaskPtr);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -164,7 +162,6 @@ Deno.test({
     assertEquals(value, 1234567890123n);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -192,7 +189,6 @@ Deno.test({
     cleanup(ctx, result3);
     cleanup(ctx, result2);
     cleanup(ctx, result1);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -214,7 +210,6 @@ Deno.test({
     assertEquals(isNull1, 1);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -234,7 +229,6 @@ Deno.test({
     assertEquals(colCount, 1n);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });

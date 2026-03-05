@@ -20,7 +20,6 @@ Deno.test({
     assertEquals(sum, 60n);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -39,7 +38,6 @@ Deno.test({
     assertEquals(avg, 20.0);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -58,7 +56,6 @@ Deno.test({
     assertEquals(count, 3n);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -77,7 +74,6 @@ Deno.test({
     assertEquals(min, 5);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -96,7 +92,6 @@ Deno.test({
     assertEquals(max, 20);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -124,7 +119,6 @@ Deno.test({
     assertEquals(colCount, 2n);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -145,7 +139,6 @@ Deno.test({
     assertEquals(rowCount, 3n);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -165,7 +158,6 @@ Deno.test({
     assertEquals(rowCount, 3n);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -186,7 +178,6 @@ Deno.test({
     assertEquals(rowCount, 2n);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -206,7 +197,6 @@ Deno.test({
     assertEquals(rowCount, 3n);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -230,7 +220,6 @@ Deno.test({
     assertEquals(colCount, 5n);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -254,7 +243,6 @@ Deno.test({
     assertEquals(val, 4);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -280,7 +268,6 @@ Deno.test({
 
     lib.symbols.duckdb_free(ptr);
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -301,7 +288,6 @@ Deno.test({
     assertEquals(val, 15);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -336,7 +322,6 @@ Deno.test({
     lib.symbols.duckdb_free(ptr1);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });

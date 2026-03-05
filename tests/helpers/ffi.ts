@@ -117,6 +117,33 @@ export function runQuery(
 }
 
 /**
+ * Extract a VARCHAR value from a result and free the memory
+ *
+ * This is a convenience wrapper that extracts a string value from a DuckDB
+ * result and automatically frees the allocated memory.
+ *
+ * @param lib - The loaded DuckDB library
+ * @param result - The result buffer
+ * @param colIdx - Column index
+ * @param rowIdx - Row index
+ * @returns The string value, or null if the pointer is null
+ */
+export function getStringValue(
+  lib: Deno.DynamicLibrary<typeof symbols>,
+  result: ResultPtrBuf,
+  colIdx: bigint,
+  rowIdx: bigint,
+): string | null {
+  const ptr = lib.symbols.duckdb_value_varchar(result, colIdx, rowIdx);
+  if (!ptr) return null;
+
+  const value = new Deno.UnsafePointerView(ptr).getCString();
+  lib.symbols.duckdb_free(ptr);
+
+  return value;
+}
+
+/**
  * Clean up all resources
  *
  * @param ctx - Test context to clean up

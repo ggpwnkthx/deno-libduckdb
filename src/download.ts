@@ -6,6 +6,7 @@
 
 import { DUCKDB_VERSION } from "./mod.ts";
 import { DEFAULT_TIMEOUT_MS, getArch, getPlatform } from "./constants.ts";
+import { warn } from "./logger.ts";
 
 /** Default directory where DuckDB native library is downloaded */
 export const DEFAULT_OUTPUT_DIR = `${Deno.cwd()}/libduckdb`;
@@ -123,7 +124,7 @@ async function downloadFile(
     !contentType.includes("gzip")
   ) {
     // Could be HTML error page - log warning but proceed
-    console.warn(`Unexpected Content-Type: ${contentType}`);
+    warn(`Unexpected Content-Type: ${contentType}`);
   }
 
   // Get expected size if available
@@ -177,7 +178,7 @@ async function downloadWithRetry(
     if (attempt >= MAX_RETRIES) {
       throw error;
     }
-    console.warn(
+    warn(
       `Download attempt ${attempt} failed, retrying in ${
         RETRY_DELAY_MS * attempt
       }ms...`,
@@ -346,7 +347,25 @@ interface DownloadOptions {
  * Main download function that orchestrates all steps.
  */
 export async function download(options: DownloadOptions = {}): Promise<string> {
-  const { signal } = options;
+  const { signal, platform: optPlatform, arch: optArch } = options;
+
+  // Validate platform if provided
+  if (optPlatform !== undefined) {
+    const validPlatforms = ["linux", "osx", "windows"];
+    if (!validPlatforms.includes(optPlatform)) {
+      throw new TypeError(
+        `platform must be one of: ${validPlatforms.join(", ")}`,
+      );
+    }
+  }
+
+  // Validate arch if provided
+  if (optArch !== undefined) {
+    const validArchs = ["amd64", "arm64"];
+    if (!validArchs.includes(optArch)) {
+      throw new TypeError(`arch must be one of: ${validArchs.join(", ")}`);
+    }
+  }
 
   // Check if already aborted
   if (signal?.aborted) {

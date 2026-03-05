@@ -24,7 +24,6 @@ Deno.test({
     assert(isNull);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -45,7 +44,6 @@ Deno.test({
     assertEquals(rowCount, 0n);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -70,7 +68,6 @@ Deno.test({
 
     lib.symbols.duckdb_free(ptr);
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -87,7 +84,6 @@ Deno.test({
     assertEquals(value, 0n);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -112,7 +108,6 @@ Deno.test({
     assertEquals(rowCount, 10n);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -140,7 +135,6 @@ Deno.test({
 
     lib.symbols.duckdb_free(ptr);
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -167,7 +161,6 @@ Deno.test({
 
     lib.symbols.duckdb_free(ptr);
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -194,7 +187,6 @@ Deno.test({
     assertEquals(count, 0n);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -225,7 +217,6 @@ Deno.test({
     cleanup(ctx, result3);
     cleanup(ctx, result2);
     cleanup(ctx, result1);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -254,7 +245,6 @@ Deno.test({
 
     cleanup(ctx, maxResult);
     cleanup(ctx, minResult);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -295,7 +285,6 @@ Deno.test({
 
     cleanup(ctx, minResult);
     cleanup(ctx, maxResult);
-    cleanup(ctx);
     lib.close();
   },
 });

@@ -52,7 +52,6 @@ Deno.test({
     assertEquals(count, 2n);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -84,7 +83,6 @@ Deno.test({
 
     cleanup(ctx, sumResult);
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -119,7 +117,6 @@ Deno.test({
     assertEquals(colCount, 3n);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -146,7 +143,6 @@ Deno.test({
     assertEquals(count, 2n);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -174,7 +170,6 @@ Deno.test({
     assertEquals(sum, 210n);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });
@@ -203,7 +198,6 @@ Deno.test({
     assertEquals(colCount, 3n);
 
     cleanup(ctx, result);
-    cleanup(ctx);
     lib.close();
   },
 });

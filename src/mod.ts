@@ -99,6 +99,10 @@ export async function load(
   if (signal?.aborted) {
     throw new DOMException("Load operation was aborted", "AbortError");
   }
+  // Validate libPath if provided
+  if (libPath !== undefined && typeof libPath !== "string") {
+    throw new TypeError("libPath must be a string if provided");
+  }
 
   let actualPath: string;
 

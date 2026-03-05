@@ -4,6 +4,7 @@
 
 import { assertEquals, assertExists, assertNotEquals } from "@std/assert";
 import { load } from "@ggpwnkthx/libduckdb";
+import { DUCKDB_RESULT_SIZE } from "../src/ffi/structs.ts";
 import { cleanup, createTestDB } from "./helpers/ffi.ts";
 
 Deno.test({
@@ -13,7 +14,7 @@ Deno.test({
     const ctx = createTestDB(lib);
 
     // Execute an invalid query
-    const resultBuf = new Uint8Array(new ArrayBuffer(48));
+    const resultBuf = new Uint8Array(new ArrayBuffer(DUCKDB_RESULT_SIZE));
     const queryBytes = new TextEncoder().encode(
       "SELECT * FROM nonexistent_table\0",
     );
@@ -59,7 +60,7 @@ Deno.test({
     const ctx = createTestDB(lib);
 
     // Execute a valid query
-    const resultBuf = new Uint8Array(new ArrayBuffer(48));
+    const resultBuf = new Uint8Array(new ArrayBuffer(DUCKDB_RESULT_SIZE));
     const queryBytes = new TextEncoder().encode("SELECT 1 AS value\0");
     const queryPtr = Deno.UnsafePointer.of(queryBytes);
 
