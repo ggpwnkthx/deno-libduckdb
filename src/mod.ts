@@ -90,11 +90,18 @@ function findLibrary(
 /**
  * Load DuckDB library, downloading it automatically if not found
  * @param libPath - Optional explicit path to the library
+ * @param signal - Optional AbortSignal to cancel the operation
  * @returns The loaded DuckDB library
  */
 export async function load(
   libPath?: string,
+  signal?: AbortSignal,
 ): Promise<Deno.DynamicLibrary<typeof symbols>> {
+  // Check if already aborted
+  if (signal?.aborted) {
+    throw new DOMException("Load operation was aborted", "AbortError");
+  }
+
   let actualPath: string;
 
   if (libPath) {
@@ -108,8 +115,13 @@ export async function load(
     } else {
       // Download the library as fallback
       console.log("DuckDB library not found, downloading...");
-      actualPath = await download({ output: DEFAULT_OUTPUT_DIR });
+      actualPath = await download({ output: DEFAULT_OUTPUT_DIR, signal });
     }
+  }
+
+  // Check again after download
+  if (signal?.aborted) {
+    throw new DOMException("Load operation was aborted", "AbortError");
   }
 
   try {
@@ -147,6 +159,38 @@ export { cstringToPtr } from "@ggpwnkthx/libclang";
  * @returns Pointer to the C string
  */
 export { ptrToCString } from "@ggpwnkthx/libclang";
+
+/**
+ * Convert a C string pointer to a JavaScript string and automatically free the memory.
+ *
+ * This is a convenience wrapper around `cstringToPtr` that handles memory cleanup.
+ * Use this for string values returned from DuckDB (e.g., via `duckdb_value_varchar`)
+ * that need to be freed with `duckdb_free()`.
+ *
+ * @param lib - The loaded DuckDB library
+ * @param ptr - Pointer to the C string (from DuckDB API)
+ * @returns JavaScript string, or null if ptr is null
+ * @example
+ * ```ts
+ * const lib = await load();
+ * const ptr = lib.symbols.duckdb_value_varchar(result, 0n, 0n);
+ * const str = ptrToCStringAndFree(lib, ptr);
+ * ```
+ */
+export function ptrToCStringAndFree(
+  lib: Deno.DynamicLibrary<typeof symbols>,
+  ptr: Deno.PointerValue<unknown>,
+): string | null {
+  if (!ptr) return null;
+
+  const view = new Deno.UnsafePointerView(ptr);
+  const str = view.getCString();
+
+  // Free the memory allocated by DuckDB
+  lib.symbols.duckdb_free(ptr);
+
+  return str;
+}
 
 /** The DuckDB FFI function symbols loaded from the native library */
 export { symbols };

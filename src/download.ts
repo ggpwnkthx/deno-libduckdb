@@ -124,8 +124,9 @@ function findAsset(
 async function downloadFile(
   url: string,
   destPath: string,
+  signal?: AbortSignal,
 ): Promise<void> {
-  const response = await fetch(url);
+  const response = await fetch(url, { signal });
   if (!response.ok) {
     throw new Error(
       `Failed to download: ${response.status} ${response.statusText}`,
@@ -177,11 +178,21 @@ const RETRY_DELAY_MS = 1000;
 async function downloadWithRetry(
   url: string,
   destPath: string,
+  signal?: AbortSignal,
   attempt = 1,
 ): Promise<void> {
+  // Check abort before each attempt
+  if (signal?.aborted) {
+    throw new DOMException("Download operation was aborted", "AbortError");
+  }
+
   try {
-    await downloadFile(url, destPath);
+    await downloadFile(url, destPath, signal);
   } catch (error) {
+    // Don't retry if aborted
+    if (signal?.aborted || error instanceof DOMException) {
+      throw error;
+    }
     if (attempt >= MAX_RETRIES) {
       throw error;
     }
@@ -193,7 +204,7 @@ async function downloadWithRetry(
     await new Promise((resolve) =>
       setTimeout(resolve, RETRY_DELAY_MS * attempt)
     );
-    await downloadWithRetry(url, destPath, attempt + 1);
+    await downloadWithRetry(url, destPath, signal, attempt + 1);
   }
 }
 
@@ -346,12 +357,21 @@ interface DownloadOptions {
   platform?: string;
   /** Target architecture (amd64, arm64) - auto-detected if not provided */
   arch?: string;
+  /** AbortSignal to cancel the download operation */
+  signal?: AbortSignal;
 }
 
 /**
  * Main download function that orchestrates all steps.
  */
 export async function download(options: DownloadOptions = {}): Promise<string> {
+  const { signal } = options;
+
+  // Check if already aborted
+  if (signal?.aborted) {
+    throw new DOMException("Download operation was aborted", "AbortError");
+  }
+
   const outputDir = options.output ?? DEFAULT_OUTPUT_DIR;
 
   // Get version from deno.json or use provided version
@@ -364,6 +384,11 @@ export async function download(options: DownloadOptions = {}): Promise<string> {
   // Get release info
   const release = await getRelease(version);
 
+  // Check abort after fetch
+  if (signal?.aborted) {
+    throw new DOMException("Download operation was aborted", "AbortError");
+  }
+
   // Find matching asset
   const downloadUrl = findAsset(release, platform, arch);
   if (!downloadUrl) {
@@ -375,27 +400,33 @@ export async function download(options: DownloadOptions = {}): Promise<string> {
 
   // Download with retry
   const tempDir = await Deno.makeTempDir();
-  const ext = downloadUrl.endsWith(".gz") ? ".gz" : ".zip";
-  const archivePath = `${tempDir}/duckdb${ext}`;
-
-  await downloadWithRetry(downloadUrl, archivePath);
-
-  // Validate downloaded file is a valid archive
-  await validateArchive(archivePath);
-
-  // Extract
   let libraryPath: string;
 
-  if (ext === ".gz") {
-    libraryPath = await extractGz(archivePath, outputDir);
-  } else {
-    await extractZip(archivePath, outputDir);
-    const result = listExtractedFiles(outputDir);
-    libraryPath = result.library ?? outputDir;
-  }
+  try {
+    const ext = downloadUrl.endsWith(".gz") ? ".gz" : ".zip";
+    const archivePath = `${tempDir}/duckdb${ext}`;
 
-  // Cleanup temp
-  await Deno.remove(tempDir, { recursive: true });
+    await downloadWithRetry(downloadUrl, archivePath, signal);
+
+    // Validate downloaded file is a valid archive
+    await validateArchive(archivePath);
+
+    // Extract
+    if (ext === ".gz") {
+      libraryPath = await extractGz(archivePath, outputDir);
+    } else {
+      await extractZip(archivePath, outputDir);
+      const result = listExtractedFiles(outputDir);
+      libraryPath = result.library ?? outputDir;
+    }
+  } finally {
+    // Always cleanup temp directory, even on extraction failure
+    try {
+      await Deno.remove(tempDir, { recursive: true });
+    } catch {
+      // Ignore cleanup errors
+    }
+  }
 
   return libraryPath;
 }

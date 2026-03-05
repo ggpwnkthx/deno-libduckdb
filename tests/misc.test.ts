@@ -6,6 +6,13 @@ import { assertEquals, assertExists } from "@std/assert";
 import { load } from "@ggpwnkthx/libduckdb";
 import { cleanup, createTestDB, runQuery } from "./helpers/ffi.ts";
 
+/**
+ * Assert that a duckdb_query call was successful (return value 0)
+ */
+function assertQuerySuccess(result: number): void {
+  assertEquals(result, 0, "duckdb_query should return 0 on success");
+}
+
 Deno.test({
   name: "duckdb - duckdb_rows_changed",
   async fn() {
@@ -110,13 +117,23 @@ Deno.test({
     );
     const queryPtr1 = Deno.UnsafePointer.of(queryBytes1);
     const resultBuf1 = new Uint8Array(48);
-    lib.symbols.duckdb_query(connPtr1, queryPtr1, resultBuf1);
+    const insertResult = lib.symbols.duckdb_query(
+      connPtr1,
+      queryPtr1,
+      resultBuf1,
+    );
+    assertQuerySuccess(insertResult);
 
     // Use second connection to query
     const queryBytes2 = new TextEncoder().encode("SELECT count(*) FROM test\0");
     const queryPtr2 = Deno.UnsafePointer.of(queryBytes2);
     const resultBuf2 = new Uint8Array(48);
-    lib.symbols.duckdb_query(connPtr2, queryPtr2, resultBuf2);
+    const queryResult = lib.symbols.duckdb_query(
+      connPtr2,
+      queryPtr2,
+      resultBuf2,
+    );
+    assertQuerySuccess(queryResult);
 
     const count = lib.symbols.duckdb_value_int64(resultBuf2, 0n, 0n);
     assertEquals(count, 0n);
