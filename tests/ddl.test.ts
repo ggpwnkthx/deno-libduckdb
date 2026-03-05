@@ -2,7 +2,7 @@
  * Tests for DuckDB DDL operations (CREATE TABLE, INSERT, etc.)
  */
 
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertNotEquals } from "@std/assert";
 import { load } from "@ggpwnkthx/libduckdb";
 import { cleanup, createTestDB, runQuery } from "./helpers/ffi.ts";
 
@@ -180,7 +180,7 @@ Deno.test({
 });
 
 Deno.test({
-  name: "duckdb - DDL: ALTER TABLE (ADD COLUMN)",
+  name: "duckdb - DDL: Alter TABLE (ADD COLUMN)",
   async fn() {
     const lib = await load();
     const ctx = createTestDB(lib);
@@ -229,7 +229,7 @@ Deno.test({
     );
 
     // Should return non-zero indicating error
-    assertEquals(queryResult !== 0, true);
+    assertNotEquals(queryResult, 0);
 
     lib.symbols.duckdb_destroy_result(resultBuf);
     cleanup(ctx);

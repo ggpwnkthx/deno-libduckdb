@@ -5,6 +5,7 @@
  */
 
 import { DUCKDB_VERSION } from "./mod.ts";
+import { DEFAULT_TIMEOUT_MS } from "./constants.ts";
 
 /** Default directory where DuckDB native library is downloaded */
 export const DEFAULT_OUTPUT_DIR = `${Deno.cwd()}/libduckdb`;
@@ -65,6 +66,7 @@ export async function getRelease(version: string): Promise<Release> {
       "Accept": "application/vnd.github+json",
       "X-GitHub-Api-Version": "2022-11-28",
     },
+    signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
   });
 
   if (!response.ok) {
@@ -126,7 +128,13 @@ async function downloadFile(
   destPath: string,
   signal?: AbortSignal,
 ): Promise<void> {
-  const response = await fetch(url, { signal });
+  // Combine external signal with timeout
+  const timeoutSignal = AbortSignal.timeout(DEFAULT_TIMEOUT_MS);
+  const combinedSignal = signal
+    ? AbortSignal.any([signal, timeoutSignal])
+    : timeoutSignal;
+
+  const response = await fetch(url, { signal: combinedSignal });
   if (!response.ok) {
     throw new Error(
       `Failed to download: ${response.status} ${response.statusText}`,
@@ -226,7 +234,7 @@ async function validateArchive(archivePath: string): Promise<void> {
   const header = new Uint8Array(4);
   const file = await Deno.open(archivePath);
   await file.read(header);
-  await file.close();
+  file.close();
 
   const isZip = header[0] === 0x50 &&
     header[1] === 0x4B &&

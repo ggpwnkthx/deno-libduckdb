@@ -2,7 +2,7 @@
  * Tests for DuckDB utility functions
  */
 
-import { assertEquals, assertExists } from "@std/assert";
+import { assert, assertExists } from "@std/assert";
 import * as download from "../src/download.ts";
 import * as library from "../src/mod.ts";
 
@@ -12,7 +12,7 @@ Deno.test({
     const version = library.DUCKDB_VERSION;
     assertExists(version);
     // Version should be in format like "1.4.4"
-    assertEquals(version.match(/^\d+\.\d+\.\d+$/) !== null, true);
+    assertExists(version.match(/^\d+\.\d+\.\d+$/));
   },
 });
 
@@ -23,7 +23,7 @@ Deno.test({
     assertExists(platform);
     // Should return one of: linux, osx, windows
     const validPlatforms = ["linux", "osx", "windows"];
-    assertEquals(validPlatforms.includes(platform), true);
+    assert(validPlatforms.includes(platform));
   },
 });
 
@@ -34,7 +34,7 @@ Deno.test({
     assertExists(arch);
     // Should return one of: amd64, arm64
     const validArchs = ["amd64", "arm64"];
-    assertEquals(validArchs.includes(arch), true);
+    assert(validArchs.includes(arch));
   },
 });
 
@@ -59,7 +59,7 @@ Deno.test({
     const version = library.getVersion(lib);
     assertExists(version);
     // Version should be non-empty string
-    assertEquals(version.length > 0, true);
+    assert(version.length > 0);
     lib.close();
   },
 });

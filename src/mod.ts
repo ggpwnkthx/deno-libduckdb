@@ -9,7 +9,13 @@ import {
   pathExists,
 } from "@ggpwnkthx/libclang";
 import { symbols } from "./ffi/symbols.ts";
+import {
+  getSystemLibPaths,
+  LIBRARY_CANDIDATES,
+  LIBRARY_NAME,
+} from "./constants.ts";
 import { DEFAULT_OUTPUT_DIR, download } from "./download.ts";
+import { info } from "./logger.ts";
 
 /** The DuckDB version this binding targets */
 export const DUCKDB_VERSION = "1.4.4";
@@ -45,10 +51,10 @@ function findLibrary(
     searchPaths.push(`${defaultLibDir}/${platformLibName}`);
   }
 
-  // 3. Also check with just the lib name in the default directory
-  searchPaths.push(`${defaultLibDir}/${libName}.so`);
-  searchPaths.push(`${defaultLibDir}/${libName}.dylib`);
-  searchPaths.push(`${defaultLibDir}/${libName}.dll`);
+  // 3. Also check with just the lib name in the default directory using candidates
+  for (const candidate of LIBRARY_CANDIDATES) {
+    searchPaths.push(`${defaultLibDir}/${candidate}`);
+  }
 
   // 4. Check common system paths
   const commonPaths = getCommonLibPaths();
@@ -63,18 +69,10 @@ function findLibrary(
     }
   }
 
-  // 5. Try system default library paths
-  if (Deno.build.os === "linux") {
-    searchPaths.push(`/usr/lib/${platformLibName}`);
-    searchPaths.push(`/usr/local/lib/${platformLibName}`);
-    searchPaths.push(`/usr/lib64/${platformLibName}`);
-    searchPaths.push(`/lib/${platformLibName}`);
-    searchPaths.push(`/lib64/${platformLibName}`);
-  } else if (Deno.build.os === "darwin") {
-    searchPaths.push(`/usr/lib/${platformLibName}`);
-    searchPaths.push(`/usr/local/lib/${platformLibName}`);
-  } else if (Deno.build.os === "windows") {
-    searchPaths.push(`C:\\Windows\\System32\\${platformLibName}`);
+  // 5. Try system default library paths using centralized constants
+  const systemPaths = getSystemLibPaths();
+  for (const sysPath of systemPaths) {
+    searchPaths.push(`${sysPath}/${platformLibName}`);
   }
 
   // Search all paths
@@ -108,13 +106,13 @@ export async function load(
     // Use explicit path if provided
     actualPath = libPath;
   } else {
-    // Try to find the library automatically
-    const foundPath = findLibrary("libduckdb");
+    // Try to find the library automatically using centralized constant
+    const foundPath = findLibrary(LIBRARY_NAME);
     if (foundPath) {
       actualPath = foundPath;
     } else {
       // Download the library as fallback
-      console.log("DuckDB library not found, downloading...");
+      info("DuckDB library not found, downloading...");
       actualPath = await download({ output: DEFAULT_OUTPUT_DIR, signal });
     }
   }
@@ -191,6 +189,3 @@ export function ptrToCStringAndFree(
 
   return str;
 }
-
-/** The DuckDB FFI function symbols loaded from the native library */
-export { symbols };

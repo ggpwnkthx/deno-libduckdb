@@ -2,7 +2,7 @@
  * Tests for DuckDB FFI error handling
  */
 
-import { assertEquals, assertExists } from "@std/assert";
+import { assertEquals, assertExists, assertNotEquals } from "@std/assert";
 import { load } from "@ggpwnkthx/libduckdb";
 import { cleanup, createTestDB } from "./helpers/ffi.ts";
 
@@ -26,16 +26,16 @@ Deno.test({
     );
 
     // Query should fail (non-zero)
-    assertEquals(queryResult !== 0, true, "Query should fail");
+    assertNotEquals(queryResult, 0, "Query should fail");
 
     // Get error message
     const errorPtr = lib.symbols.duckdb_result_error(resultBuf);
     assertExists(errorPtr, "Error pointer should exist");
 
     const errorMsg = new Deno.UnsafePointerView(errorPtr).getCString();
-    assertEquals(
-      errorMsg.length > 0,
-      true,
+    assertNotEquals(
+      errorMsg.length,
+      0,
       "Error message should not be empty",
     );
     // Error should mention the table name or "not exist"
@@ -75,8 +75,8 @@ Deno.test({
     // Get error - should be null
     const errorPtr = lib.symbols.duckdb_result_error(resultBuf);
     assertEquals(
-      errorPtr === null || errorPtr === undefined,
-      true,
+      errorPtr,
+      null,
       "Error should be null on success",
     );
 

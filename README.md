@@ -15,7 +15,7 @@ access to DuckDB's C API from Deno with full TypeScript type safety.
 - **Auto-generated Bindings**: FFI bindings generated from duckdb.h header
 - **TypeScript Types**: Complete type definitions for DuckDB handles and structs
 - **Cross-platform**: Supports Linux, macOS, and Windows
-- **Zero Dependencies**: Pure Deno FFI, no native modules required
+- **Minimal Dependencies**: Only uses @ggpwnkthx/libclang for library loading
 
 ## Installation
 
