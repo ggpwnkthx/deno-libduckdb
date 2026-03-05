@@ -1,6 +1,6 @@
 {
   "name": "@ggpwnkthx/libduckdb",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "exports": {
     ".": "./mod.ts",
     "./enums": "./src/ffi/enums.ts",
@@ -12,7 +12,8 @@
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
     "@std/path": "jsr:@std/path@1",
-    "@ggpwnkthx/libclang": "jsr:@ggpwnkthx/libclang@^1"
+    "@ggpwnkthx/libclang": "jsr:@ggpwnkthx/libclang@^1",
+    "pako": "npm:pako@^2.1.0"
   },
   "tasks": {
     "download": "deno run -A tools/download.ts",

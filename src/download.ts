@@ -7,6 +7,7 @@
 import { DUCKDB_VERSION } from "./mod.ts";
 import { DEFAULT_TIMEOUT_MS, getArch, getPlatform } from "./constants.ts";
 import { warn } from "./logger.ts";
+import { extractGz, extractZip } from "./archive.ts";
 
 /** Default directory where DuckDB native library is downloaded */
 export const DEFAULT_OUTPUT_DIR = `${Deno.cwd()}/libduckdb`;
@@ -65,30 +66,32 @@ function findAsset(
 ): string | null {
   const assets = release.assets;
 
-  // Try exact match first: libduckdb-{platform}-{arch}.zip
-  let pattern = `libduckdb-${platform}-${arch}.zip`;
-  for (const asset of assets) {
-    if (asset.name === pattern) {
-      return asset.browser_download_url;
-    }
-  }
-
-  // Fallback: try universal (macOS)
-  if (platform === "osx" && arch !== "universal") {
-    pattern = `libduckdb-${platform}-universal.zip`;
+  // Try exact match first with .gz (preferred) then .zip
+  for (const ext of [".gz", ".zip"]) {
+    const pattern = `libduckdb-${platform}-${arch}${ext}`;
     for (const asset of assets) {
       if (asset.name === pattern) {
         return asset.browser_download_url;
       }
     }
-  }
 
-  // Fallback: try amd64 if arm64 not found
-  if (arch === "arm64") {
-    pattern = `libduckdb-${platform}-amd64.zip`;
-    for (const asset of assets) {
-      if (asset.name === pattern) {
-        return asset.browser_download_url;
+    // Fallback: try universal (macOS)
+    if (platform === "osx" && arch !== "universal") {
+      const universalPattern = `libduckdb-${platform}-universal${ext}`;
+      for (const asset of assets) {
+        if (asset.name === universalPattern) {
+          return asset.browser_download_url;
+        }
+      }
+    }
+
+    // Fallback: try amd64 if arm64 not found
+    if (arch === "arm64") {
+      const amd64Pattern = `libduckdb-${platform}-amd64${ext}`;
+      for (const asset of assets) {
+        if (asset.name === amd64Pattern) {
+          return asset.browser_download_url;
+        }
       }
     }
   }
@@ -223,54 +226,6 @@ async function validateArchive(archivePath: string): Promise<void> {
       } ${header[1].toString(16)}`,
     );
   }
-}
-
-/** Extract ZIP file */
-async function extractZip(
-  zipPath: string,
-  outputDir: string,
-): Promise<string> {
-  // Create output directory if it doesn't exist
-  await Deno.mkdir(outputDir, { recursive: true });
-
-  // Try using unzip command
-  const unzipProc = new Deno.Command("unzip", {
-    args: ["-o", zipPath, "-d", outputDir],
-    stdout: "piped",
-    stderr: "piped",
-  });
-
-  const unzipResult = await unzipProc.output();
-  if (unzipResult.code !== 0) {
-    const stderr = new TextDecoder().decode(unzipResult.stderr);
-    throw new Error(`Failed to extract ZIP: ${stderr}`);
-  }
-
-  return outputDir;
-}
-
-/** Extract gz file */
-async function extractGz(
-  gzPath: string,
-  outputDir: string,
-): Promise<string> {
-  // Gunzip using command
-  const decompressProc = new Deno.Command("gunzip", {
-    args: ["-c", gzPath],
-    stdout: "piped",
-  });
-
-  const result = await decompressProc.output();
-  if (result.code !== 0) {
-    throw new Error("Failed to extract gz file");
-  }
-
-  await Deno.mkdir(outputDir, { recursive: true });
-  const outPath = `${outputDir}/duckdb`;
-  await Deno.writeFile(outPath, result.stdout);
-  await Deno.chmod(outPath, 0o755);
-
-  return outPath;
 }
 
 /** List all extracted files and find library */

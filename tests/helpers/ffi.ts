@@ -5,7 +5,6 @@
  */
 
 import type { symbols } from "../../src/ffi/symbols.ts";
-import { DUCKDB_RESULT_SIZE } from "../../src/ffi/structs.ts";
 
 /**
  * Context object containing a loaded DuckDB library and resources
@@ -93,7 +92,7 @@ export function runQuery(
   ctx: TestContext,
   sql: string,
 ): ResultPtrBuf {
-  const resultBuf = createBuffer(DUCKDB_RESULT_SIZE); // duckdb_result struct size
+  const resultBuf = createBuffer(48); // duckdb_result struct size
 
   const queryBytes = new TextEncoder().encode(sql + "\0");
   const queryPtr = Deno.UnsafePointer.of(queryBytes);
@@ -114,33 +113,6 @@ export function runQuery(
   }
 
   return resultBuf;
-}
-
-/**
- * Extract a VARCHAR value from a result and free the memory
- *
- * This is a convenience wrapper that extracts a string value from a DuckDB
- * result and automatically frees the allocated memory.
- *
- * @param lib - The loaded DuckDB library
- * @param result - The result buffer
- * @param colIdx - Column index
- * @param rowIdx - Row index
- * @returns The string value, or null if the pointer is null
- */
-export function getStringValue(
-  lib: Deno.DynamicLibrary<typeof symbols>,
-  result: ResultPtrBuf,
-  colIdx: bigint,
-  rowIdx: bigint,
-): string | null {
-  const ptr = lib.symbols.duckdb_value_varchar(result, colIdx, rowIdx);
-  if (!ptr) return null;
-
-  const value = new Deno.UnsafePointerView(ptr).getCString();
-  lib.symbols.duckdb_free(ptr);
-
-  return value;
 }
 
 /**

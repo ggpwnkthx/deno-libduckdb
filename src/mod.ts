@@ -16,6 +16,13 @@ import {
 } from "./constants.ts";
 import { DEFAULT_OUTPUT_DIR, download } from "./download.ts";
 import { info } from "./logger.ts";
+export {
+  assertHandleBuffer,
+  createHandleBuffer,
+  HANDLE_SIZE,
+  readHandle,
+  writeHandle,
+} from "./handles.ts";
 
 /** The DuckDB version this binding targets */
 export const DUCKDB_VERSION = "1.4.4";
@@ -69,7 +76,7 @@ function findLibrary(
     }
   }
 
-  // 5. Try system default library paths using centralized constants
+  // 5. Try system default library paths using centralized constant
   const systemPaths = getSystemLibPaths();
   for (const sysPath of systemPaths) {
     searchPaths.push(`${sysPath}/${platformLibName}`);
