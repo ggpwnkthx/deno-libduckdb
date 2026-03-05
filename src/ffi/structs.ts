@@ -310,3 +310,6 @@ export const duckdb_arrow_options: Deno.NativeStructType = {
 export const duckdb_extension_access: Deno.NativeStructType = {
   struct: ["pointer", "pointer", "pointer"],
 };
+
+/** Size of duckdb_result struct in bytes (3 pointers × 8 bytes, plus padding) */
+export const DUCKDB_RESULT_SIZE = 48;

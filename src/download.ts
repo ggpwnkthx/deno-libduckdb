@@ -5,40 +5,13 @@
  */
 
 import { DUCKDB_VERSION } from "./mod.ts";
-import { DEFAULT_TIMEOUT_MS } from "./constants.ts";
+import { DEFAULT_TIMEOUT_MS, getArch, getPlatform } from "./constants.ts";
 
 /** Default directory where DuckDB native library is downloaded */
 export const DEFAULT_OUTPUT_DIR = `${Deno.cwd()}/libduckdb`;
 
-/** Map Deno build OS to DuckDB platform string
- * @returns The DuckDB platform string (linux, osx, or windows)
- */
-export function getPlatform(): string {
-  switch (Deno.build.os) {
-    case "linux":
-      return "linux";
-    case "darwin":
-      return "osx";
-    case "windows":
-      return "windows";
-    default:
-      throw new Error(`Unsupported platform: ${Deno.build.os}`);
-  }
-}
-
-/** Map Deno build arch to DuckDB arch string
- * @returns The DuckDB arch string (amd64 or arm64)
- */
-export function getArch(): string {
-  switch (Deno.build.arch) {
-    case "x86_64":
-      return "amd64";
-    case "aarch64":
-      return "arm64";
-    default:
-      throw new Error(`Unsupported architecture: ${Deno.build.arch}`);
-  }
-}
+// Re-export for backward compatibility
+export { getArch, getPlatform };
 
 /** GitHub release asset containing download information */
 export interface ReleaseAsset {

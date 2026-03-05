@@ -404,5 +404,13 @@ export function generateStructsTS(
     }
   }
 
+  // Add DUCKDB_RESULT_SIZE constant after all structs
+  // This is the size of the duckdb_result struct (3 pointers × 8 bytes + padding)
+  lines.push(
+    "/** Size of duckdb_result struct in bytes (3 pointers × 8 bytes, plus padding) */",
+  );
+  lines.push("export const DUCKDB_RESULT_SIZE = 48;");
+  lines.push("");
+
   return lines.join("\n");
 }

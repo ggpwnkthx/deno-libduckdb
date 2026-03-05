@@ -1,6 +1,6 @@
 {
   "name": "@ggpwnkthx/libduckdb",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "exports": {
     ".": "./mod.ts",
     "./enums": "./src/ffi/enums.ts",

@@ -5,6 +5,7 @@
  */
 
 import type { symbols } from "../../src/ffi/symbols.ts";
+import { DUCKDB_RESULT_SIZE } from "../../src/ffi/structs.ts";
 
 /**
  * Context object containing a loaded DuckDB library and resources
@@ -92,7 +93,7 @@ export function runQuery(
   ctx: TestContext,
   sql: string,
 ): ResultPtrBuf {
-  const resultBuf = createBuffer(48); // duckdb_result struct size
+  const resultBuf = createBuffer(DUCKDB_RESULT_SIZE); // duckdb_result struct size
 
   const queryBytes = new TextEncoder().encode(sql + "\0");
   const queryPtr = Deno.UnsafePointer.of(queryBytes);
