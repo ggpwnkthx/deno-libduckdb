@@ -25,7 +25,7 @@ export {
 } from "./handles.ts";
 
 /** The DuckDB version this binding targets */
-export const DUCKDB_VERSION = "1.4.4";
+export const DUCKDB_VERSION = "1.5.0";
 
 /**
  * Find a library by searching common locations

@@ -181,6 +181,11 @@ export const duckdb_config: Deno.NativeStructType = {
   struct: ["pointer"],
 };
 
+/** duckdb_config_option: DuckDB duckdb_config_option struct */
+export const duckdb_config_option: Deno.NativeStructType = {
+  struct: ["pointer"],
+};
+
 /** duckdb_logical_type: DuckDB duckdb_logical_type struct */
 export const duckdb_logical_type: Deno.NativeStructType = {
   struct: ["pointer"],
@@ -231,6 +236,11 @@ export const duckdb_bind_info: Deno.NativeStructType = {
   struct: ["pointer"],
 };
 
+/** duckdb_init_info: DuckDB duckdb_init_info struct */
+export const duckdb_init_info: Deno.NativeStructType = {
+  struct: ["pointer"],
+};
+
 /** duckdb_scalar_function: DuckDB duckdb_scalar_function struct */
 export const duckdb_scalar_function: Deno.NativeStructType = {
   struct: ["pointer"],
@@ -261,8 +271,28 @@ export const duckdb_table_function: Deno.NativeStructType = {
   struct: ["pointer"],
 };
 
-/** duckdb_init_info: DuckDB duckdb_init_info struct */
-export const duckdb_init_info: Deno.NativeStructType = {
+/** duckdb_copy_function: DuckDB duckdb_copy_function struct */
+export const duckdb_copy_function: Deno.NativeStructType = {
+  struct: ["pointer"],
+};
+
+/** duckdb_copy_function_bind_info: DuckDB duckdb_copy_function_bind_info struct */
+export const duckdb_copy_function_bind_info: Deno.NativeStructType = {
+  struct: ["pointer"],
+};
+
+/** duckdb_copy_function_global_init_info: DuckDB duckdb_copy_function_global_init_info struct */
+export const duckdb_copy_function_global_init_info: Deno.NativeStructType = {
+  struct: ["pointer"],
+};
+
+/** duckdb_copy_function_sink_info: DuckDB duckdb_copy_function_sink_info struct */
+export const duckdb_copy_function_sink_info: Deno.NativeStructType = {
+  struct: ["pointer"],
+};
+
+/** duckdb_copy_function_finalize_info: DuckDB duckdb_copy_function_finalize_info struct */
+export const duckdb_copy_function_finalize_info: Deno.NativeStructType = {
   struct: ["pointer"],
 };
 
@@ -303,6 +333,36 @@ export const duckdb_arrow_array: Deno.NativeStructType = {
 
 /** duckdb_arrow_options: DuckDB duckdb_arrow_options struct */
 export const duckdb_arrow_options: Deno.NativeStructType = {
+  struct: ["pointer"],
+};
+
+/** duckdb_file_open_options: DuckDB duckdb_file_open_options struct */
+export const duckdb_file_open_options: Deno.NativeStructType = {
+  struct: ["pointer"],
+};
+
+/** duckdb_file_system: DuckDB duckdb_file_system struct */
+export const duckdb_file_system: Deno.NativeStructType = {
+  struct: ["pointer"],
+};
+
+/** duckdb_file_handle: DuckDB duckdb_file_handle struct */
+export const duckdb_file_handle: Deno.NativeStructType = {
+  struct: ["pointer"],
+};
+
+/** duckdb_catalog: DuckDB duckdb_catalog struct */
+export const duckdb_catalog: Deno.NativeStructType = {
+  struct: ["pointer"],
+};
+
+/** duckdb_catalog_entry: DuckDB duckdb_catalog_entry struct */
+export const duckdb_catalog_entry: Deno.NativeStructType = {
+  struct: ["pointer"],
+};
+
+/** duckdb_log_storage: DuckDB duckdb_log_storage struct */
+export const duckdb_log_storage: Deno.NativeStructType = {
   struct: ["pointer"],
 };
 

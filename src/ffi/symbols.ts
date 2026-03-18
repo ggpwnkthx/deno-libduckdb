@@ -24,10 +24,22 @@ import {
   duckdb_blob,
   duckdb_cast_function,
   duckdb_cast_function_t,
+  duckdb_catalog,
+  duckdb_catalog_entry,
   duckdb_client_context,
   duckdb_config,
+  duckdb_config_option,
   duckdb_connection,
   duckdb_copy_callback_t,
+  duckdb_copy_function,
+  duckdb_copy_function_bind_info,
+  duckdb_copy_function_bind_t,
+  duckdb_copy_function_finalize_info,
+  duckdb_copy_function_finalize_t,
+  duckdb_copy_function_global_init_info,
+  duckdb_copy_function_global_init_t,
+  duckdb_copy_function_sink_info,
+  duckdb_copy_function_sink_t,
   duckdb_create_type_info,
   duckdb_data_chunk,
   duckdb_database,
@@ -38,11 +50,16 @@ import {
   duckdb_error_data,
   duckdb_expression,
   duckdb_extracted_statements,
+  duckdb_file_handle,
+  duckdb_file_open_options,
+  duckdb_file_system,
   duckdb_function_info,
   duckdb_hugeint,
   duckdb_init_info,
   duckdb_instance_cache,
   duckdb_interval,
+  duckdb_log_storage,
+  duckdb_logger_write_log_entry_t,
   duckdb_logical_type,
   duckdb_pending_result,
   duckdb_prepared_statement,
@@ -53,6 +70,7 @@ import {
   duckdb_result,
   duckdb_scalar_function,
   duckdb_scalar_function_bind_t,
+  duckdb_scalar_function_init_t,
   duckdb_scalar_function_set,
   duckdb_scalar_function_t,
   duckdb_selection_vector,
@@ -469,6 +487,11 @@ export const symbols = {
   duckdb_string_t_data: {
     parameters: [buffer],
     result: pointer,
+  },
+  /** duckdb_valid_utf8_check(str: const char *, len: idx_t): duckdb_error_data */
+  duckdb_valid_utf8_check: {
+    parameters: [pointer, idx_t],
+    result: duckdb_error_data,
   },
   /** duckdb_from_date(date: duckdb_date): duckdb_date_struct */
   duckdb_from_date: {
@@ -1439,6 +1462,11 @@ export const symbols = {
     parameters: [duckdb_vector, idx_t, pointer, idx_t],
     result: "void",
   },
+  /** duckdb_unsafe_vector_assign_string_element_len(vector: duckdb_vector, index: idx_t, str: const char *, str_len: idx_t): void */
+  duckdb_unsafe_vector_assign_string_element_len: {
+    parameters: [duckdb_vector, idx_t, pointer, idx_t],
+    result: "void",
+  },
   /** duckdb_list_vector_get_child(vector: duckdb_vector): duckdb_vector */
   duckdb_list_vector_get_child: {
     parameters: [duckdb_vector],
@@ -1645,6 +1673,41 @@ export const symbols = {
   duckdb_scalar_function_bind_get_argument: {
     parameters: [duckdb_bind_info, idx_t],
     result: duckdb_expression,
+  },
+  /** duckdb_scalar_function_get_state(info: duckdb_function_info): void * */
+  duckdb_scalar_function_get_state: {
+    parameters: [duckdb_function_info],
+    result: pointer,
+  },
+  /** duckdb_scalar_function_set_init(scalar_function: duckdb_scalar_function, init: duckdb_scalar_function_init_t): void */
+  duckdb_scalar_function_set_init: {
+    parameters: [duckdb_scalar_function, duckdb_scalar_function_init_t],
+    result: "void",
+  },
+  /** duckdb_scalar_function_init_set_error(info: duckdb_init_info, error: const char *): void */
+  duckdb_scalar_function_init_set_error: {
+    parameters: [duckdb_init_info, pointer],
+    result: "void",
+  },
+  /** duckdb_scalar_function_init_set_state(info: duckdb_init_info, state: void *, destroy: duckdb_delete_callback_t): void */
+  duckdb_scalar_function_init_set_state: {
+    parameters: [duckdb_init_info, pointer, duckdb_delete_callback_t],
+    result: "void",
+  },
+  /** duckdb_scalar_function_init_get_client_context(info: duckdb_init_info, out_context: duckdb_client_context *): void */
+  duckdb_scalar_function_init_get_client_context: {
+    parameters: [duckdb_init_info, buffer],
+    result: "void",
+  },
+  /** duckdb_scalar_function_init_get_bind_data(info: duckdb_init_info): void * */
+  duckdb_scalar_function_init_get_bind_data: {
+    parameters: [duckdb_init_info],
+    result: pointer,
+  },
+  /** duckdb_scalar_function_init_get_extra_info(info: duckdb_init_info): void * */
+  duckdb_scalar_function_init_get_extra_info: {
+    parameters: [duckdb_init_info],
+    result: pointer,
   },
   /** duckdb_create_selection_vector(size: idx_t): duckdb_selection_vector */
   duckdb_create_selection_vector: {
@@ -2011,6 +2074,11 @@ export const symbols = {
     parameters: [duckdb_appender],
     result: duckdb_state,
   },
+  /** duckdb_appender_clear(appender: duckdb_appender): duckdb_state */
+  duckdb_appender_clear: {
+    parameters: [duckdb_appender],
+    result: duckdb_state,
+  },
   /** duckdb_appender_close(appender: duckdb_appender): duckdb_state */
   duckdb_appender_close: {
     parameters: [duckdb_appender],
@@ -2191,10 +2259,20 @@ export const symbols = {
     parameters: [duckdb_table_description, idx_t, pointer],
     result: duckdb_state,
   },
+  /** duckdb_table_description_get_column_count(table_description: duckdb_table_description): idx_t */
+  duckdb_table_description_get_column_count: {
+    parameters: [duckdb_table_description],
+    result: idx_t,
+  },
   /** duckdb_table_description_get_column_name(table_description: duckdb_table_description, index: idx_t): char * */
   duckdb_table_description_get_column_name: {
     parameters: [duckdb_table_description, idx_t],
     result: pointer,
+  },
+  /** duckdb_table_description_get_column_type(table_description: duckdb_table_description, index: idx_t): duckdb_logical_type */
+  duckdb_table_description_get_column_type: {
+    parameters: [duckdb_table_description, idx_t],
+    result: duckdb_logical_type,
   },
   /** duckdb_to_arrow_schema(arrow_options: duckdb_arrow_options, types: duckdb_logical_type *, names: const char **, column_count: idx_t, out_schema: struct ArrowSchema *): duckdb_error_data */
   duckdb_to_arrow_schema: {
@@ -2431,5 +2509,389 @@ export const symbols = {
   duckdb_expression_fold: {
     parameters: [duckdb_client_context, duckdb_expression, buffer],
     result: duckdb_error_data,
+  },
+  /** duckdb_client_context_get_file_system(context: duckdb_client_context): duckdb_file_system */
+  duckdb_client_context_get_file_system: {
+    parameters: [duckdb_client_context],
+    result: duckdb_file_system,
+  },
+  /** duckdb_destroy_file_system(file_system: duckdb_file_system *): void */
+  duckdb_destroy_file_system: {
+    parameters: [buffer],
+    result: "void",
+  },
+  /** duckdb_file_system_error_data(file_system: duckdb_file_system): duckdb_error_data */
+  duckdb_file_system_error_data: {
+    parameters: [duckdb_file_system],
+    result: duckdb_error_data,
+  },
+  /** duckdb_file_system_open(file_system: duckdb_file_system, path: const char *, options: duckdb_file_open_options, out_file: duckdb_file_handle *): duckdb_state */
+  duckdb_file_system_open: {
+    parameters: [duckdb_file_system, pointer, duckdb_file_open_options, buffer],
+    result: duckdb_state,
+  },
+  /** duckdb_create_file_open_options(): duckdb_file_open_options */
+  duckdb_create_file_open_options: {
+    parameters: [],
+    result: duckdb_file_open_options,
+  },
+  /** duckdb_file_open_options_set_flag(options: duckdb_file_open_options, flag: duckdb_file_flag, value: _Bool): duckdb_state */
+  duckdb_file_open_options_set_flag: {
+    parameters: [duckdb_file_open_options, buffer, u8],
+    result: duckdb_state,
+  },
+  /** duckdb_destroy_file_open_options(options: duckdb_file_open_options *): void */
+  duckdb_destroy_file_open_options: {
+    parameters: [buffer],
+    result: "void",
+  },
+  /** duckdb_destroy_file_handle(file_handle: duckdb_file_handle *): void */
+  duckdb_destroy_file_handle: {
+    parameters: [buffer],
+    result: "void",
+  },
+  /** duckdb_file_handle_error_data(file_handle: duckdb_file_handle): duckdb_error_data */
+  duckdb_file_handle_error_data: {
+    parameters: [duckdb_file_handle],
+    result: duckdb_error_data,
+  },
+  /** duckdb_file_handle_read(file_handle: duckdb_file_handle, buffer: void *, size: int64_t): int64_t */
+  duckdb_file_handle_read: {
+    parameters: [duckdb_file_handle, pointer, i64],
+    result: i64,
+  },
+  /** duckdb_file_handle_write(file_handle: duckdb_file_handle, buffer: const void *, size: int64_t): int64_t */
+  duckdb_file_handle_write: {
+    parameters: [duckdb_file_handle, pointer, i64],
+    result: i64,
+  },
+  /** duckdb_file_handle_tell(file_handle: duckdb_file_handle): int64_t */
+  duckdb_file_handle_tell: {
+    parameters: [duckdb_file_handle],
+    result: i64,
+  },
+  /** duckdb_file_handle_size(file_handle: duckdb_file_handle): int64_t */
+  duckdb_file_handle_size: {
+    parameters: [duckdb_file_handle],
+    result: i64,
+  },
+  /** duckdb_file_handle_seek(file_handle: duckdb_file_handle, position: int64_t): duckdb_state */
+  duckdb_file_handle_seek: {
+    parameters: [duckdb_file_handle, i64],
+    result: duckdb_state,
+  },
+  /** duckdb_file_handle_sync(file_handle: duckdb_file_handle): duckdb_state */
+  duckdb_file_handle_sync: {
+    parameters: [duckdb_file_handle],
+    result: duckdb_state,
+  },
+  /** duckdb_file_handle_close(file_handle: duckdb_file_handle): duckdb_state */
+  duckdb_file_handle_close: {
+    parameters: [duckdb_file_handle],
+    result: duckdb_state,
+  },
+  /** duckdb_create_config_option(): duckdb_config_option */
+  duckdb_create_config_option: {
+    parameters: [],
+    result: duckdb_config_option,
+  },
+  /** duckdb_destroy_config_option(option: duckdb_config_option *): void */
+  duckdb_destroy_config_option: {
+    parameters: [buffer],
+    result: "void",
+  },
+  /** duckdb_config_option_set_name(option: duckdb_config_option, name: const char *): void */
+  duckdb_config_option_set_name: {
+    parameters: [duckdb_config_option, pointer],
+    result: "void",
+  },
+  /** duckdb_config_option_set_type(option: duckdb_config_option, type: duckdb_logical_type): void */
+  duckdb_config_option_set_type: {
+    parameters: [duckdb_config_option, duckdb_logical_type],
+    result: "void",
+  },
+  /** duckdb_config_option_set_default_value(option: duckdb_config_option, default_value: duckdb_value): void */
+  duckdb_config_option_set_default_value: {
+    parameters: [duckdb_config_option, duckdb_value],
+    result: "void",
+  },
+  /** duckdb_config_option_set_default_scope(option: duckdb_config_option, default_scope: duckdb_config_option_scope): void */
+  duckdb_config_option_set_default_scope: {
+    parameters: [duckdb_config_option, buffer],
+    result: "void",
+  },
+  /** duckdb_config_option_set_description(option: duckdb_config_option, description: const char *): void */
+  duckdb_config_option_set_description: {
+    parameters: [duckdb_config_option, pointer],
+    result: "void",
+  },
+  /** duckdb_register_config_option(connection: duckdb_connection, option: duckdb_config_option): duckdb_state */
+  duckdb_register_config_option: {
+    parameters: [duckdb_connection, duckdb_config_option],
+    result: duckdb_state,
+  },
+  /** duckdb_client_context_get_config_option(context: duckdb_client_context, name: const char *, out_scope: duckdb_config_option_scope *): duckdb_value */
+  duckdb_client_context_get_config_option: {
+    parameters: [duckdb_client_context, pointer, buffer],
+    result: duckdb_value,
+  },
+  /** duckdb_create_copy_function(): duckdb_copy_function */
+  duckdb_create_copy_function: {
+    parameters: [],
+    result: duckdb_copy_function,
+  },
+  /** duckdb_copy_function_set_name(copy_function: duckdb_copy_function, name: const char *): void */
+  duckdb_copy_function_set_name: {
+    parameters: [duckdb_copy_function, pointer],
+    result: "void",
+  },
+  /** duckdb_copy_function_set_extra_info(copy_function: duckdb_copy_function, extra_info: void *, destructor: duckdb_delete_callback_t): void */
+  duckdb_copy_function_set_extra_info: {
+    parameters: [duckdb_copy_function, pointer, duckdb_delete_callback_t],
+    result: "void",
+  },
+  /** duckdb_register_copy_function(connection: duckdb_connection, copy_function: duckdb_copy_function): duckdb_state */
+  duckdb_register_copy_function: {
+    parameters: [duckdb_connection, duckdb_copy_function],
+    result: duckdb_state,
+  },
+  /** duckdb_destroy_copy_function(copy_function: duckdb_copy_function *): void */
+  duckdb_destroy_copy_function: {
+    parameters: [buffer],
+    result: "void",
+  },
+  /** duckdb_copy_function_set_bind(copy_function: duckdb_copy_function, bind: duckdb_copy_function_bind_t): void */
+  duckdb_copy_function_set_bind: {
+    parameters: [duckdb_copy_function, duckdb_copy_function_bind_t],
+    result: "void",
+  },
+  /** duckdb_copy_function_bind_set_error(info: duckdb_copy_function_bind_info, error: const char *): void */
+  duckdb_copy_function_bind_set_error: {
+    parameters: [duckdb_copy_function_bind_info, pointer],
+    result: "void",
+  },
+  /** duckdb_copy_function_bind_get_extra_info(info: duckdb_copy_function_bind_info): void * */
+  duckdb_copy_function_bind_get_extra_info: {
+    parameters: [duckdb_copy_function_bind_info],
+    result: pointer,
+  },
+  /** duckdb_copy_function_bind_get_client_context(info: duckdb_copy_function_bind_info): duckdb_client_context */
+  duckdb_copy_function_bind_get_client_context: {
+    parameters: [duckdb_copy_function_bind_info],
+    result: duckdb_client_context,
+  },
+  /** duckdb_copy_function_bind_get_column_count(info: duckdb_copy_function_bind_info): idx_t */
+  duckdb_copy_function_bind_get_column_count: {
+    parameters: [duckdb_copy_function_bind_info],
+    result: idx_t,
+  },
+  /** duckdb_copy_function_bind_get_column_type(info: duckdb_copy_function_bind_info, col_idx: idx_t): duckdb_logical_type */
+  duckdb_copy_function_bind_get_column_type: {
+    parameters: [duckdb_copy_function_bind_info, idx_t],
+    result: duckdb_logical_type,
+  },
+  /** duckdb_copy_function_bind_get_options(info: duckdb_copy_function_bind_info): duckdb_value */
+  duckdb_copy_function_bind_get_options: {
+    parameters: [duckdb_copy_function_bind_info],
+    result: duckdb_value,
+  },
+  /** duckdb_copy_function_bind_set_bind_data(info: duckdb_copy_function_bind_info, bind_data: void *, destructor: duckdb_delete_callback_t): void */
+  duckdb_copy_function_bind_set_bind_data: {
+    parameters: [
+      duckdb_copy_function_bind_info,
+      pointer,
+      duckdb_delete_callback_t,
+    ],
+    result: "void",
+  },
+  /** duckdb_copy_function_set_global_init(copy_function: duckdb_copy_function, init: duckdb_copy_function_global_init_t): void */
+  duckdb_copy_function_set_global_init: {
+    parameters: [duckdb_copy_function, duckdb_copy_function_global_init_t],
+    result: "void",
+  },
+  /** duckdb_copy_function_global_init_set_error(info: duckdb_copy_function_global_init_info, error: const char *): void */
+  duckdb_copy_function_global_init_set_error: {
+    parameters: [duckdb_copy_function_global_init_info, pointer],
+    result: "void",
+  },
+  /** duckdb_copy_function_global_init_get_extra_info(info: duckdb_copy_function_global_init_info): void * */
+  duckdb_copy_function_global_init_get_extra_info: {
+    parameters: [duckdb_copy_function_global_init_info],
+    result: pointer,
+  },
+  /** duckdb_copy_function_global_init_get_client_context(info: duckdb_copy_function_global_init_info): duckdb_client_context */
+  duckdb_copy_function_global_init_get_client_context: {
+    parameters: [duckdb_copy_function_global_init_info],
+    result: duckdb_client_context,
+  },
+  /** duckdb_copy_function_global_init_get_bind_data(info: duckdb_copy_function_global_init_info): void * */
+  duckdb_copy_function_global_init_get_bind_data: {
+    parameters: [duckdb_copy_function_global_init_info],
+    result: pointer,
+  },
+  /** duckdb_copy_function_global_init_get_file_path(info: duckdb_copy_function_global_init_info): const char * */
+  duckdb_copy_function_global_init_get_file_path: {
+    parameters: [duckdb_copy_function_global_init_info],
+    result: pointer,
+  },
+  /** duckdb_copy_function_global_init_set_global_state(info: duckdb_copy_function_global_init_info, global_state: void *, destructor: duckdb_delete_callback_t): void */
+  duckdb_copy_function_global_init_set_global_state: {
+    parameters: [
+      duckdb_copy_function_global_init_info,
+      pointer,
+      duckdb_delete_callback_t,
+    ],
+    result: "void",
+  },
+  /** duckdb_copy_function_set_sink(copy_function: duckdb_copy_function, function: duckdb_copy_function_sink_t): void */
+  duckdb_copy_function_set_sink: {
+    parameters: [duckdb_copy_function, duckdb_copy_function_sink_t],
+    result: "void",
+  },
+  /** duckdb_copy_function_sink_set_error(info: duckdb_copy_function_sink_info, error: const char *): void */
+  duckdb_copy_function_sink_set_error: {
+    parameters: [duckdb_copy_function_sink_info, pointer],
+    result: "void",
+  },
+  /** duckdb_copy_function_sink_get_extra_info(info: duckdb_copy_function_sink_info): void * */
+  duckdb_copy_function_sink_get_extra_info: {
+    parameters: [duckdb_copy_function_sink_info],
+    result: pointer,
+  },
+  /** duckdb_copy_function_sink_get_client_context(info: duckdb_copy_function_sink_info): duckdb_client_context */
+  duckdb_copy_function_sink_get_client_context: {
+    parameters: [duckdb_copy_function_sink_info],
+    result: duckdb_client_context,
+  },
+  /** duckdb_copy_function_sink_get_bind_data(info: duckdb_copy_function_sink_info): void * */
+  duckdb_copy_function_sink_get_bind_data: {
+    parameters: [duckdb_copy_function_sink_info],
+    result: pointer,
+  },
+  /** duckdb_copy_function_sink_get_global_state(info: duckdb_copy_function_sink_info): void * */
+  duckdb_copy_function_sink_get_global_state: {
+    parameters: [duckdb_copy_function_sink_info],
+    result: pointer,
+  },
+  /** duckdb_copy_function_set_finalize(copy_function: duckdb_copy_function, finalize: duckdb_copy_function_finalize_t): void */
+  duckdb_copy_function_set_finalize: {
+    parameters: [duckdb_copy_function, duckdb_copy_function_finalize_t],
+    result: "void",
+  },
+  /** duckdb_copy_function_finalize_set_error(info: duckdb_copy_function_finalize_info, error: const char *): void */
+  duckdb_copy_function_finalize_set_error: {
+    parameters: [duckdb_copy_function_finalize_info, pointer],
+    result: "void",
+  },
+  /** duckdb_copy_function_finalize_get_extra_info(info: duckdb_copy_function_finalize_info): void * */
+  duckdb_copy_function_finalize_get_extra_info: {
+    parameters: [duckdb_copy_function_finalize_info],
+    result: pointer,
+  },
+  /** duckdb_copy_function_finalize_get_client_context(info: duckdb_copy_function_finalize_info): duckdb_client_context */
+  duckdb_copy_function_finalize_get_client_context: {
+    parameters: [duckdb_copy_function_finalize_info],
+    result: duckdb_client_context,
+  },
+  /** duckdb_copy_function_finalize_get_bind_data(info: duckdb_copy_function_finalize_info): void * */
+  duckdb_copy_function_finalize_get_bind_data: {
+    parameters: [duckdb_copy_function_finalize_info],
+    result: pointer,
+  },
+  /** duckdb_copy_function_finalize_get_global_state(info: duckdb_copy_function_finalize_info): void * */
+  duckdb_copy_function_finalize_get_global_state: {
+    parameters: [duckdb_copy_function_finalize_info],
+    result: pointer,
+  },
+  /** duckdb_copy_function_set_copy_from_function(copy_function: duckdb_copy_function, table_function: duckdb_table_function): void */
+  duckdb_copy_function_set_copy_from_function: {
+    parameters: [duckdb_copy_function, duckdb_table_function],
+    result: "void",
+  },
+  /** duckdb_table_function_bind_get_result_column_count(info: duckdb_bind_info): idx_t */
+  duckdb_table_function_bind_get_result_column_count: {
+    parameters: [duckdb_bind_info],
+    result: idx_t,
+  },
+  /** duckdb_table_function_bind_get_result_column_name(info: duckdb_bind_info, col_idx: idx_t): const char * */
+  duckdb_table_function_bind_get_result_column_name: {
+    parameters: [duckdb_bind_info, idx_t],
+    result: pointer,
+  },
+  /** duckdb_table_function_bind_get_result_column_type(info: duckdb_bind_info, col_idx: idx_t): duckdb_logical_type */
+  duckdb_table_function_bind_get_result_column_type: {
+    parameters: [duckdb_bind_info, idx_t],
+    result: duckdb_logical_type,
+  },
+  /** duckdb_client_context_get_catalog(context: duckdb_client_context, catalog_name: const char *): duckdb_catalog */
+  duckdb_client_context_get_catalog: {
+    parameters: [duckdb_client_context, pointer],
+    result: duckdb_catalog,
+  },
+  /** duckdb_catalog_get_type_name(catalog: duckdb_catalog): const char * */
+  duckdb_catalog_get_type_name: {
+    parameters: [duckdb_catalog],
+    result: pointer,
+  },
+  /** duckdb_catalog_get_entry(catalog: duckdb_catalog, context: duckdb_client_context, entry_type: duckdb_catalog_entry_type, schema_name: const char *, entry_name: const char *): duckdb_catalog_entry */
+  duckdb_catalog_get_entry: {
+    parameters: [
+      duckdb_catalog,
+      duckdb_client_context,
+      buffer,
+      pointer,
+      pointer,
+    ],
+    result: duckdb_catalog_entry,
+  },
+  /** duckdb_destroy_catalog(catalog: duckdb_catalog *): void */
+  duckdb_destroy_catalog: {
+    parameters: [buffer],
+    result: "void",
+  },
+  /** duckdb_catalog_entry_get_type(entry: duckdb_catalog_entry): duckdb_catalog_entry_type */
+  duckdb_catalog_entry_get_type: {
+    parameters: [duckdb_catalog_entry],
+    result: i32,
+  },
+  /** duckdb_catalog_entry_get_name(entry: duckdb_catalog_entry): const char * */
+  duckdb_catalog_entry_get_name: {
+    parameters: [duckdb_catalog_entry],
+    result: pointer,
+  },
+  /** duckdb_destroy_catalog_entry(entry: duckdb_catalog_entry *): void */
+  duckdb_destroy_catalog_entry: {
+    parameters: [buffer],
+    result: "void",
+  },
+  /** duckdb_create_log_storage(): duckdb_log_storage */
+  duckdb_create_log_storage: {
+    parameters: [],
+    result: duckdb_log_storage,
+  },
+  /** duckdb_destroy_log_storage(log_storage: duckdb_log_storage *): void */
+  duckdb_destroy_log_storage: {
+    parameters: [buffer],
+    result: "void",
+  },
+  /** duckdb_log_storage_set_write_log_entry(log_storage: duckdb_log_storage, function: duckdb_logger_write_log_entry_t): void */
+  duckdb_log_storage_set_write_log_entry: {
+    parameters: [duckdb_log_storage, duckdb_logger_write_log_entry_t],
+    result: "void",
+  },
+  /** duckdb_log_storage_set_extra_data(log_storage: duckdb_log_storage, extra_data: void *, delete_callback: duckdb_delete_callback_t): void */
+  duckdb_log_storage_set_extra_data: {
+    parameters: [duckdb_log_storage, pointer, duckdb_delete_callback_t],
+    result: "void",
+  },
+  /** duckdb_log_storage_set_name(log_storage: duckdb_log_storage, name: const char *): void */
+  duckdb_log_storage_set_name: {
+    parameters: [duckdb_log_storage, pointer],
+    result: "void",
+  },
+  /** duckdb_register_log_storage(database: duckdb_database, log_storage: duckdb_log_storage): duckdb_state */
+  duckdb_register_log_storage: {
+    parameters: [duckdb_database, duckdb_log_storage],
+    result: duckdb_state,
   },
 } as const;

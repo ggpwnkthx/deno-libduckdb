@@ -1,6 +1,6 @@
 # libduckdb
 
-Low-level DuckDB FFI bindings for Deno.
+Low-level DuckDB (v1.5.0) FFI bindings for Deno.
 
 [![JSR](https://jsr.io/badges/@ggpwnkthx/libduckdb)](https://jsr.io/@ggpwnkthx/libduckdb)
 

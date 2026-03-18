@@ -75,16 +75,40 @@ export const duckdb_blob = "pointer" as const;
 export const duckdb_cast_function = "pointer" as const;
 /** duckdb_cast_function_t: duckdb_cast_function_t */
 export const duckdb_cast_function_t = "pointer" as const;
+/** duckdb_catalog: duckdb_catalog */
+export const duckdb_catalog = "pointer" as const;
+/** duckdb_catalog_entry: duckdb_catalog_entry */
+export const duckdb_catalog_entry = "pointer" as const;
 /** duckdb_client_context: duckdb_client_context */
 export const duckdb_client_context = "pointer" as const;
 /** duckdb_column: duckdb_column */
 export const duckdb_column = "pointer" as const;
 /** duckdb_config: duckdb_config */
 export const duckdb_config = "u64" as const;
+/** duckdb_config_option: duckdb_config_option */
+export const duckdb_config_option = "pointer" as const;
 /** duckdb_connection: duckdb_connection */
 export const duckdb_connection = "u64" as const;
 /** duckdb_copy_callback_t: duckdb_copy_callback_t */
 export const duckdb_copy_callback_t = "pointer" as const;
+/** duckdb_copy_function: duckdb_copy_function */
+export const duckdb_copy_function = "pointer" as const;
+/** duckdb_copy_function_bind_info: duckdb_copy_function_bind_info */
+export const duckdb_copy_function_bind_info = "pointer" as const;
+/** duckdb_copy_function_bind_t: duckdb_copy_function_bind_t */
+export const duckdb_copy_function_bind_t = "pointer" as const;
+/** duckdb_copy_function_finalize_info: duckdb_copy_function_finalize_info */
+export const duckdb_copy_function_finalize_info = "pointer" as const;
+/** duckdb_copy_function_finalize_t: duckdb_copy_function_finalize_t */
+export const duckdb_copy_function_finalize_t = "pointer" as const;
+/** duckdb_copy_function_global_init_info: duckdb_copy_function_global_init_info */
+export const duckdb_copy_function_global_init_info = "pointer" as const;
+/** duckdb_copy_function_global_init_t: duckdb_copy_function_global_init_t */
+export const duckdb_copy_function_global_init_t = "pointer" as const;
+/** duckdb_copy_function_sink_info: duckdb_copy_function_sink_info */
+export const duckdb_copy_function_sink_info = "pointer" as const;
+/** duckdb_copy_function_sink_t: duckdb_copy_function_sink_t */
+export const duckdb_copy_function_sink_t = "pointer" as const;
 /** duckdb_create_type_info: duckdb_create_type_info */
 export const duckdb_create_type_info = "pointer" as const;
 /** duckdb_data_chunk: duckdb_data_chunk */
@@ -107,6 +131,12 @@ export const duckdb_expression = "pointer" as const;
 export const duckdb_extension_info = "pointer" as const;
 /** duckdb_extracted_statements: duckdb_extracted_statements */
 export const duckdb_extracted_statements = "pointer" as const;
+/** duckdb_file_handle: duckdb_file_handle */
+export const duckdb_file_handle = "pointer" as const;
+/** duckdb_file_open_options: duckdb_file_open_options */
+export const duckdb_file_open_options = "pointer" as const;
+/** duckdb_file_system: duckdb_file_system */
+export const duckdb_file_system = "pointer" as const;
 /** duckdb_function_info: duckdb_function_info */
 export const duckdb_function_info = "pointer" as const;
 /** duckdb_hugeint: duckdb_hugeint */
@@ -119,6 +149,10 @@ export const duckdb_instance_cache = "u64" as const;
 export const duckdb_interval = "pointer" as const;
 /** duckdb_list_entry: duckdb_list_entry */
 export const duckdb_list_entry = "pointer" as const;
+/** duckdb_log_storage: duckdb_log_storage */
+export const duckdb_log_storage = "pointer" as const;
+/** duckdb_logger_write_log_entry_t: duckdb_logger_write_log_entry_t */
+export const duckdb_logger_write_log_entry_t = "pointer" as const;
 /** duckdb_logical_type: duckdb_logical_type */
 export const duckdb_logical_type = "u64" as const;
 /** duckdb_pending_result: duckdb_pending_result */
@@ -139,6 +173,8 @@ export const duckdb_result = "u64" as const;
 export const duckdb_scalar_function = "pointer" as const;
 /** duckdb_scalar_function_bind_t: duckdb_scalar_function_bind_t */
 export const duckdb_scalar_function_bind_t = "pointer" as const;
+/** duckdb_scalar_function_init_t: duckdb_scalar_function_init_t */
+export const duckdb_scalar_function_init_t = "pointer" as const;
 /** duckdb_scalar_function_set: duckdb_scalar_function_set */
 export const duckdb_scalar_function_set = "pointer" as const;
 /** duckdb_scalar_function_t: duckdb_scalar_function_t */
