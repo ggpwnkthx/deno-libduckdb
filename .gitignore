@@ -1,5 +1,2 @@
-/lib*
-/gen*
+/libduckdb
 .env
-CLAUDE.md
-core

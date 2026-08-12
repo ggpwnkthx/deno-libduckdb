@@ -30,7 +30,7 @@ async function ensureOutputDir(path: string): Promise<void> {
 
 /**
  * Generate FFI bindings from DuckDB C header file.
- * Parses duckdb.h and generates TypeScript bindings in src/ffi/
+ * Parses duckdb.h and generates TypeScript bindings in ./ffi/
  *
  * @returns A promise that resolves when generation is complete
  */
@@ -72,7 +72,7 @@ export async function generate() {
   console.log(`Found ${functions.length} functions`);
 
   // Create output directory
-  const outputDir = `${Deno.cwd()}/src/ffi`;
+  const outputDir = `${Deno.cwd()}//ffi`;
   await ensureOutputDir(outputDir);
 
   // Generate typedefs

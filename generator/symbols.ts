@@ -2,7 +2,9 @@ import {
   CXChildVisitResult,
   CXCursorKind,
   CXTypeKind,
+  getCursorArgument,
   getCursorKindFromBuffer,
+  getCursorNumArguments,
   getCursorSpelling,
   getCursorType,
   getResultType,
@@ -22,6 +24,7 @@ interface FunctionInfo {
   name: string;
   returnType: string; // Type spelling from C
   returnTypeKind: CXTypeKind;
+  cursorTypeSpelling: string; // Full function signature spelling (used for defensive _Bool detection)
   parameters: ParameterInfo[];
 }
 
@@ -47,10 +50,18 @@ function mapParamType(
   // Check if this is an output parameter (parameter name starts with "out_")
   const isOutputParam = paramName.startsWith("out_");
 
+  const cleanSpelling = typeSpelling.replace(/^(const |volatile )/, "").trim();
+
+  // Handle C boolean builtin (from <stdbool.h>) before any other type lookup.
+  // libclang may report this as either "bool" or "_Bool" depending on the
+  // translation unit's macros; both spell the same 1-byte logical value.
+  if (cleanSpelling === "bool" || cleanSpelling === "_Bool") {
+    return "u8";
+  }
+
   // First check for typedef names - handle these before Pointer type check
   // Check for pointer-to-handle pattern: duckdb_database *, duckdb_connection *, etc.
   // These are typically in-out parameters that get modified (e.g., set to NULL)
-  const cleanSpelling = typeSpelling.replace(/^(const |volatile )/, "").trim();
   const isPointerToHandle = /^(.+?)\s*\*$/.test(cleanSpelling);
   const baseTypeMatch = cleanSpelling.match(/^(.+?)\s*\*$/);
   const baseType = baseTypeMatch ? baseTypeMatch[1].trim() : cleanSpelling;
@@ -110,6 +121,13 @@ function mapParamType(
 
 /**
  * Map C return type to Deno FFI return type
+ *
+ * @param cursorTypeSpelling - Optional full function signature spelling
+ *   (e.g. "bool (duckdb_result *, idx_t, idx_t)"). Used as a defensive
+ *   fallback when libclang reports the result type kind/spelling as
+ *   `int` but the function actually returns `_Bool` (which the upstream
+ *   libclang FFI marshalling can misreport - see comment in
+ *   @ggpwnkthx/libclang ./ffi/gen.ts).
  */
 function mapReturnType(
   typeKind: CXTypeKind,
@@ -117,15 +135,31 @@ function mapReturnType(
   typedefNames: Set<string>,
   enumNames: Set<string>,
   structNames: Set<string>,
+  cursorTypeSpelling?: string,
 ): string {
   // Handle void return
   if (typeKind === CXTypeKind.Void) {
     return `"void"`;
   }
 
-  // First check the spelling for known DuckDB return types
-  // This handles cases where libclang doesn't report the correct type kind
   const cleanSpelling = typeSpelling.replace(/^(const |volatile )/, "").trim();
+
+  // Handle C boolean builtin (from <stdbool.h>) before any other type lookup.
+  // libclang may report this as either "bool" or "_Bool" depending on the
+  // translation unit's macros; both spell the same 1-byte logical value.
+  if (cleanSpelling === "bool" || cleanSpelling === "_Bool") {
+    return "u8";
+  }
+
+  // Defensive: if libclang misreported the return type kind/spelling as
+  // `int` for a `_Bool` return-type cursor, the function's full type
+  // spelling still contains the bool keyword. Detect that and override.
+  if (
+    cursorTypeSpelling !== undefined &&
+    /^\s*(?:_Bool|bool)\b/.test(cursorTypeSpelling)
+  ) {
+    return "u8";
+  }
   if (
     cleanSpelling === "duckdb_state" ||
     cleanSpelling === "duckdb_statement_type"
@@ -220,27 +254,52 @@ export function collectFunctions(
         returnTypeKindFinal = CXTypeKind.Enum;
       }
 
-      // Collect parameters
+      // Collect parameters using the direct cursor-argument API
+      // (clang_visitChildren fails to surface ParmDecl cursors for some
+      // libclang versions / FFI marshalling paths when the function's
+      // return type is a builtin like `_Bool`; the direct API is the
+      // documented workaround in @ggpwnkthx/libclang//libclang/cursor.ts).
       const parameters: ParameterInfo[] = [];
-      const paramChildren = visitChildren(cursor, () => {
-        return CXChildVisitResult.Continue;
-      });
 
-      for (const paramBuffer of paramChildren) {
-        const paramKind = getCursorKindFromBuffer(paramBuffer);
+      const numArgs = getCursorNumArguments(cursor);
+      for (let i = 0; i < numArgs; i++) {
+        const argCursor = getCursorArgument(cursor, i);
+        const paramName = getCursorSpelling(argCursor);
+        const paramType = getCursorType(argCursor);
+        const paramTypeKind = getTypeKind(paramType);
+        const paramTypeSpelling = getTypeSpelling(paramType);
 
-        if (paramKind === CXCursorKind.ParmDecl) {
-          const paramCursor = toCursor(paramBuffer);
-          const paramName = getCursorSpelling(paramCursor);
-          const paramType = getCursorType(paramCursor);
-          const paramTypeKind = getTypeKind(paramType);
-          const paramTypeSpelling = getTypeSpelling(paramType);
+        parameters.push({
+          name: paramName || `param${parameters.length}`,
+          type: paramTypeSpelling,
+          typeKind: paramTypeKind,
+        });
+      }
 
-          parameters.push({
-            name: paramName || `param${parameters.length}`,
-            type: paramTypeSpelling,
-            typeKind: paramTypeKind,
-          });
+      // Fallback: if the direct API reports no arguments (e.g. -1 for a
+      // non-callable cursor), try the legacy visitChildren path so we still
+      // pick up parameters from non-bool-returning cursors.
+      if (parameters.length === 0 && numArgs <= 0) {
+        const paramChildren = visitChildren(cursor, () => {
+          return CXChildVisitResult.Continue;
+        });
+
+        for (const paramBuffer of paramChildren) {
+          const paramKind = getCursorKindFromBuffer(paramBuffer);
+
+          if (paramKind === CXCursorKind.ParmDecl) {
+            const paramCursor = toCursor(paramBuffer);
+            const paramName = getCursorSpelling(paramCursor);
+            const paramType = getCursorType(paramCursor);
+            const paramTypeKind = getTypeKind(paramType);
+            const paramTypeSpelling = getTypeSpelling(paramType);
+
+            parameters.push({
+              name: paramName || `param${parameters.length}`,
+              type: paramTypeSpelling,
+              typeKind: paramTypeKind,
+            });
+          }
         }
       }
 
@@ -248,6 +307,7 @@ export function collectFunctions(
         name: funcName,
         returnType: returnTypeSpellingClean,
         returnTypeKind: returnTypeKindFinal,
+        cursorTypeSpelling: getTypeSpelling(cursorType),
         parameters,
       });
     }
@@ -319,6 +379,7 @@ export function generateSymbolsTS(
       typedefNames,
       enumNames,
       structNames,
+      func.cursorTypeSpelling,
     );
 
     // Collect used typedef names from parameters

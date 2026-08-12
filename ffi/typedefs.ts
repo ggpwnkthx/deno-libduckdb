@@ -75,10 +75,14 @@ export const duckdb_blob = "pointer" as const;
 export const duckdb_cast_function = "pointer" as const;
 /** duckdb_cast_function_t: duckdb_cast_function_t */
 export const duckdb_cast_function_t = "pointer" as const;
+/** duckdb_cast_mode: duckdb_cast_mode */
+export const duckdb_cast_mode = "i32" as const;
 /** duckdb_catalog: duckdb_catalog */
 export const duckdb_catalog = "pointer" as const;
 /** duckdb_catalog_entry: duckdb_catalog_entry */
 export const duckdb_catalog_entry = "pointer" as const;
+/** duckdb_catalog_entry_type: duckdb_catalog_entry_type */
+export const duckdb_catalog_entry_type = "i32" as const;
 /** duckdb_client_context: duckdb_client_context */
 export const duckdb_client_context = "pointer" as const;
 /** duckdb_column: duckdb_column */
@@ -87,6 +91,8 @@ export const duckdb_column = "pointer" as const;
 export const duckdb_config = "u64" as const;
 /** duckdb_config_option: duckdb_config_option */
 export const duckdb_config_option = "pointer" as const;
+/** duckdb_config_option_scope: duckdb_config_option_scope */
+export const duckdb_config_option_scope = "i32" as const;
 /** duckdb_connection: duckdb_connection */
 export const duckdb_connection = "u64" as const;
 /** duckdb_copy_callback_t: duckdb_copy_callback_t */
@@ -125,12 +131,16 @@ export const duckdb_decimal = "pointer" as const;
 export const duckdb_delete_callback_t = "pointer" as const;
 /** duckdb_error_data: duckdb_error_data */
 export const duckdb_error_data = "pointer" as const;
+/** duckdb_error_type: duckdb_error_type */
+export const duckdb_error_type = "i32" as const;
 /** duckdb_expression: duckdb_expression */
 export const duckdb_expression = "pointer" as const;
 /** duckdb_extension_info: duckdb_extension_info */
 export const duckdb_extension_info = "pointer" as const;
 /** duckdb_extracted_statements: duckdb_extracted_statements */
 export const duckdb_extracted_statements = "pointer" as const;
+/** duckdb_file_flag: duckdb_file_flag */
+export const duckdb_file_flag = "i32" as const;
 /** duckdb_file_handle: duckdb_file_handle */
 export const duckdb_file_handle = "pointer" as const;
 /** duckdb_file_open_options: duckdb_file_open_options */
@@ -157,6 +167,8 @@ export const duckdb_logger_write_log_entry_t = "pointer" as const;
 export const duckdb_logical_type = "u64" as const;
 /** duckdb_pending_result: duckdb_pending_result */
 export const duckdb_pending_result = "u64" as const;
+/** duckdb_pending_state: duckdb_pending_state */
+export const duckdb_pending_state = "i32" as const;
 /** duckdb_prepared_statement: duckdb_prepared_statement */
 export const duckdb_prepared_statement = "u64" as const;
 /** duckdb_profiling_info: duckdb_profiling_info */
@@ -169,6 +181,8 @@ export const duckdb_replacement_callback_t = "pointer" as const;
 export const duckdb_replacement_scan_info = "pointer" as const;
 /** duckdb_result: duckdb_result */
 export const duckdb_result = "u64" as const;
+/** duckdb_result_type: duckdb_result_type */
+export const duckdb_result_type = "i32" as const;
 /** duckdb_scalar_function: duckdb_scalar_function */
 export const duckdb_scalar_function = "pointer" as const;
 /** duckdb_scalar_function_bind_t: duckdb_scalar_function_bind_t */
@@ -217,6 +231,8 @@ export const duckdb_timestamp_ns = "pointer" as const;
 export const duckdb_timestamp_s = "pointer" as const;
 /** duckdb_timestamp_struct: duckdb_timestamp_struct */
 export const duckdb_timestamp_struct = "pointer" as const;
+/** duckdb_type: duckdb_type */
+export const duckdb_type = "i32" as const;
 /** duckdb_uhugeint: duckdb_uhugeint */
 export const duckdb_uhugeint = "pointer" as const;
 /** duckdb_value: duckdb_value */

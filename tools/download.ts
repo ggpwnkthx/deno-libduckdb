@@ -13,8 +13,8 @@ import {
   getArch,
   getPlatform,
   getRelease,
-} from "../src/download.ts";
-import { DUCKDB_VERSION } from "../src/mod.ts";
+} from "../download.ts";
+import { DUCKDB_VERSION } from "../mod.ts";
 
 interface CliArgs {
   output?: string;

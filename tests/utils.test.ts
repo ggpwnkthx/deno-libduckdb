@@ -3,8 +3,8 @@
  */
 
 import { assert, assertExists } from "@std/assert";
-import * as download from "../src/download.ts";
-import * as library from "../src/mod.ts";
+import * as download from "../download.ts";
+import * as library from "../mod.ts";
 
 Deno.test({
   name: "utils - DUCKDB_VERSION",

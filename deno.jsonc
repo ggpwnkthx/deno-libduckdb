@@ -1,0 +1,36 @@
+{
+  "name": "@ggpwnkthx/libduckdb",
+  "version": "1.0.17",
+  "exports": {
+    ".": "./mod.ts",
+    "./enums": "./ffi/enums.ts",
+    "./structs": "./ffi/structs.ts",
+    "./symbols": "./ffi/symbols.ts",
+    "./typedefs": "./ffi/typedefs.ts"
+  },
+  "lock": false,
+  "minimumDependencyAge": 0,
+  "imports": {
+    "@std/assert": "jsr:@std/assert@^1.0.19",
+    "@std/path": "jsr:@std/path@^1.1.6",
+    "@ggpwnkthx/libclang": "jsr:@ggpwnkthx/libclang@^1.1.0"
+  },
+  "tasks": {
+    "download": "rm -rf ./libduckdb && deno run -A tools/download.ts",
+    "generate": "deno run -A tools/generate.ts",
+    "test": "deno test -A",
+    "build": "deno task download && deno task generate && deno fmt ./ffi/* && deno lint --fix ./ffi/* && deno check ./ffi/* && deno task test"
+  },
+  "compilerOptions": {
+    "strict": true
+  },
+  "exclude": [
+    "./.*"
+  ],
+  "publish": {
+    "exclude": [
+      "./.*",
+      "./tests"
+    ]
+  }
+}

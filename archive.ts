@@ -4,7 +4,20 @@
  * Provides ZIP and gzip extraction without external commands.
  */
 
-import { inflate } from "pako";
+async function inflate(
+  data: Uint8Array,
+  opts?: { raw?: boolean },
+): Promise<Uint8Array> {
+  const format = opts?.raw ? "deflate-raw" : "deflate";
+  const buffer = data.buffer.slice(
+    data.byteOffset,
+    data.byteOffset + data.byteLength,
+  ) as ArrayBuffer;
+  const stream = new Blob([buffer]).stream().pipeThrough(
+    new DecompressionStream(format),
+  );
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
 
 /**
  * Extract ZIP archive using pure Deno APIs.
@@ -114,8 +127,8 @@ export async function extractZip(
       // Stored (no compression)
       outputData = fileData;
     } else if (compressionMethod === 8) {
-      // Deflate - use pako (supports raw deflate)
-      outputData = inflate(fileData, { raw: true });
+      // Deflate - use DecompressionStream (supports raw deflate)
+      outputData = await inflate(fileData, { raw: true });
     } else {
       throw new Error(`Unsupported compression method: ${compressionMethod}`);
     }
@@ -180,8 +193,8 @@ export async function extractGz(
   // Get compressed data (skip header and 8-byte trailer)
   const compressedData = gzData.slice(headerSize, -8);
 
-  // Decompress using pako
-  const decompressedData = inflate(compressedData);
+  // Decompress using DecompressionStream (raw deflate - gzip header is stripped above)
+  const decompressedData = await inflate(compressedData, { raw: true });
 
   // Determine output filename
   // Try to get original filename from gzip header

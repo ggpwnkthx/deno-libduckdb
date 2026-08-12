@@ -4,7 +4,7 @@
 
 import { assertEquals, assertExists, assertNotEquals } from "@std/assert";
 import { load } from "@ggpwnkthx/libduckdb";
-import { DUCKDB_RESULT_SIZE } from "../src/ffi/structs.ts";
+import { DUCKDB_RESULT_SIZE } from "../ffi/structs.ts";
 import { cleanup, createTestDB } from "./helpers/ffi.ts";
 
 Deno.test({

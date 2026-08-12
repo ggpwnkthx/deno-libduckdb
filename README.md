@@ -1,6 +1,7 @@
 # libduckdb
 
-Low-level DuckDB (v1.5.0) FFI bindings for Deno.
+Low-level DuckDB (v1.5.5) FFI bindings for Deno. This package is versioned
+`1.0.17` and ships bindings for DuckDB C API `v1.5.5`.
 
 [![JSR](https://jsr.io/badges/@ggpwnkthx/libduckdb)](https://jsr.io/@ggpwnkthx/libduckdb)
 
@@ -9,13 +10,18 @@ access to DuckDB's C API from Deno with full TypeScript type safety.
 
 ## Features
 
-- **Auto-download**: Automatically downloads the native DuckDB library if not
-  found
-- **Full C API Access**: Direct access to all DuckDB C functions via FFI
-- **Auto-generated Bindings**: FFI bindings generated from duckdb.h header
-- **TypeScript Types**: Complete type definitions for DuckDB handles and structs
-- **Cross-platform**: Supports Linux, macOS, and Windows
-- **Minimal Dependencies**: Only uses @ggpwnkthx/libclang for library loading
+- **Auto-download**: Downloads from DuckDB GitHub releases with retry, archive
+  signature validation, and size checks
+- **Auto-generated bindings**: `enums`, `structs`, `symbols`, `typedefs` parsed
+  from `duckdb.h` via libclang
+- **Subpath exports**: `./enums`, `./structs`, `./symbols`, `./typedefs`
+- **Handle helpers**: `HANDLE_SIZE`, `createHandleBuffer`, `assertHandleBuffer`,
+  `readHandle`, `writeHandle`, `toBufferSource`
+- **Cancellable**: `load` and `download` accept an `AbortSignal`
+- **Cross-platform**: Linux, macOS (incl. universal), Windows; x86_64 + arm64
+- **Pure Deno extraction**: ZIP and gzip via `DecompressionStream`, no external
+  tools
+- **Minimal runtime deps**: only `@ggpwnkthx/libclang`
 
 ## Installation
 
@@ -28,7 +34,11 @@ import { getVersion, load } from "jsr:@ggpwnkthx/libduckdb";
 ## Quick Start
 
 ```typescript
-import { getVersion, load } from "jsr:@ggpwnkthx/libduckdb";
+import {
+  getVersion,
+  load,
+  ptrToCStringAndFree,
+} from "jsr:@ggpwnkthx/libduckdb";
 
 // Load the DuckDB library (auto-downloads if needed)
 const lib = await load();
@@ -38,7 +48,8 @@ console.log("DuckDB version:", getVersion(lib));
 
 // Create a database handle (8-byte buffer for opaque pointer)
 const db = new Uint8Array(8);
-lib.symbols.duckdb_open(null, db);
+const pathPtr = Deno.UnsafePointer.of(new TextEncoder().encode(":memory:\0"));
+lib.symbols.duckdb_open(pathPtr, db);
 
 // Create a connection
 const conn = new Uint8Array(8);
@@ -54,11 +65,9 @@ const rowCount = lib.symbols.duckdb_row_count(result);
 const colCount = lib.symbols.duckdb_column_count(result);
 console.log(`Rows: ${rowCount}, Columns: ${colCount}`);
 
-// Read the string value (must free the pointer after use)
+// Read the string value (auto-frees the pointer)
 const ptr = lib.symbols.duckdb_value_varchar(result, 0n, 0n);
-const view = new Deno.UnsafePointerView(ptr);
-console.log("Result:", view.getCString());
-lib.symbols.duckdb_free(ptr);
+console.log("Result:", ptrToCStringAndFree(lib, ptr));
 
 // Clean up resources (important: avoid memory leaks)
 lib.symbols.duckdb_destroy_result(result);
@@ -74,14 +83,46 @@ This library provides **low-level** FFI bindings to the DuckDB C API. Handles
 values).
 
 > **Note**: This is a low-level library. You are responsible for:
+>
 > - Creating and managing handle buffers
 > - Cleaning up resources (results, connections, databases)
-> - Freeing memory for string values (using `duckdb_free()`)
+> - Freeing memory for string values (use `ptrToCStringAndFree` or
+>   `duckdb_free()`)
 
-### Core Functions
+### Core
 
-- `load(libPath?)` - Load the DuckDB library, with optional auto-download
+- `load(libPath?, signal?)` - Load the DuckDB library, with optional
+  auto-download and cancellation
 - `getVersion(lib)` - Get the DuckDB library version string
+- `DUCKDB_VERSION` - The DuckDB version this binding targets
+
+### Strings
+
+- `ptrToCStringAndFree(lib, ptr)` - Read a C string and call `duckdb_free` in
+  one step (use for values returned by `duckdb_value_varchar`, etc.)
+- `cstringToPtr` / `ptrToCString` - Re-exported from `@ggpwnkthx/libclang` for
+  lower-level use
+
+### Handles
+
+DuckDB uses opaque pointer handles represented as 8-byte `Uint8Array` buffers.
+
+- `HANDLE_SIZE` - `8` (bytes per handle on 64-bit)
+- `createHandleBuffer()` - Allocate a fresh handle buffer
+- `assertHandleBuffer(buf, name?)` - Throw `TypeError` if not an 8-byte
+  `Uint8Array`
+- `readHandle(buf)` - Read the pointer value as `bigint` (for debugging)
+- `writeHandle(buf, ptr)` - Write a `bigint` pointer value (rarely needed)
+- `toBufferSource(buf)` - Cast a `Uint8Array` to `BufferSource` for FFI
+
+### Generated bindings (subpath exports)
+
+- `jsr:@ggpwnkthx/libduckdb/symbols` - The `symbols` map for `Deno.dlopen`
+- `jsr:@ggpwnkthx/libduckdb/structs` - `Deno.NativeStructType` definitions
+  (`duckdb_date`, `duckdb_interval`, `duckdb_vector`, ...)
+- `jsr:@ggpwnkthx/libduckdb/enums` - `DUCKDB_TYPE`, `duckdb_state`,
+  `duckdb_statement_type`, and more
+- `jsr:@ggpwnkthx/libduckdb/typedefs` - Primitive and DuckDB typedef constants
 
 ### Working with Handles
 
@@ -114,10 +155,9 @@ const bigIntVal = lib.symbols.duckdb_value_int64(result, 0n, 0n);
 // Floating point
 const doubleVal = lib.symbols.duckdb_value_double(result, 0n, 0n);
 
-// Strings (remember to free!)
+// Strings - ptrToCStringAndFree handles duckdb_free() for you
 const ptr = lib.symbols.duckdb_value_varchar(result, 0n, 0n);
-const str = new Deno.UnsafePointerView(ptr).getCString();
-lib.symbols.duckdb_free(ptr);
+const str = ptrToCStringAndFree(lib, ptr);
 ```
 
 ## Commands
@@ -129,13 +169,21 @@ deno task download
 # Generate FFI bindings from duckdb.h header
 deno task generate
 
-# Run tests
+# Run tests (11 files: queries, types, prepared statements, errors,
+# edge cases, archive extraction, symbol-table regression, ...)
 deno task test
 
 # Full build (downloads, generates, formats, lints, checks, and tests)
 deno task build
 ```
 
+`tools/download.ts` also accepts flags when run directly:
+
+```bash
+deno run -A tools/download.ts --output ./libduckdb    # custom output dir
+deno run -A tools/download.ts --help                  # show all options
+```
+
 ## License
 
-MIT License - Copyright (c) 2026 Isaac Jessup
+MIT License - Copyright (c) 2024 Isaac Jessup

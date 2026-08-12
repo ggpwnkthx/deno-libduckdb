@@ -26,9 +26,11 @@ import {
   duckdb_cast_function_t,
   duckdb_catalog,
   duckdb_catalog_entry,
+  duckdb_catalog_entry_type,
   duckdb_client_context,
   duckdb_config,
   duckdb_config_option,
+  duckdb_config_option_scope,
   duckdb_connection,
   duckdb_copy_callback_t,
   duckdb_copy_function,
@@ -48,8 +50,10 @@ import {
   duckdb_decimal,
   duckdb_delete_callback_t,
   duckdb_error_data,
+  duckdb_error_type,
   duckdb_expression,
   duckdb_extracted_statements,
+  duckdb_file_flag,
   duckdb_file_handle,
   duckdb_file_open_options,
   duckdb_file_system,
@@ -62,6 +66,7 @@ import {
   duckdb_logger_write_log_entry_t,
   duckdb_logical_type,
   duckdb_pending_result,
+  duckdb_pending_state,
   duckdb_prepared_statement,
   duckdb_profiling_info,
   duckdb_query_progress_type,
@@ -94,6 +99,7 @@ import {
   duckdb_timestamp_ns,
   duckdb_timestamp_s,
   duckdb_timestamp_struct,
+  duckdb_type,
   duckdb_uhugeint,
   duckdb_value,
   duckdb_vector,
@@ -225,7 +231,7 @@ export const symbols = {
   },
   /** duckdb_create_error_data(type: duckdb_error_type, message: const char *): duckdb_error_data */
   duckdb_create_error_data: {
-    parameters: [buffer, pointer],
+    parameters: [duckdb_error_type, pointer],
     result: duckdb_error_data,
   },
   /** duckdb_destroy_error_data(error_data: duckdb_error_data *): void */
@@ -306,7 +312,7 @@ export const symbols = {
   /** duckdb_nullmask_data(result: duckdb_result *, col: idx_t): _Bool * */
   duckdb_nullmask_data: {
     parameters: [buffer, idx_t],
-    result: pointer,
+    result: u8,
   },
   /** duckdb_result_error(result: duckdb_result *): const char * */
   duckdb_result_error: {
@@ -845,7 +851,7 @@ export const symbols = {
   },
   /** duckdb_pending_execution_is_finished(pending_state: duckdb_pending_state): _Bool */
   duckdb_pending_execution_is_finished: {
-    parameters: [buffer],
+    parameters: [duckdb_pending_state],
     result: u8,
   },
   /** duckdb_destroy_value(value: duckdb_value *): void */
@@ -1235,7 +1241,7 @@ export const symbols = {
   },
   /** duckdb_create_logical_type(type: duckdb_type): duckdb_logical_type */
   duckdb_create_logical_type: {
-    parameters: [buffer],
+    parameters: [duckdb_type],
     result: duckdb_logical_type,
   },
   /** duckdb_logical_type_get_alias(type: duckdb_logical_type): char * */
@@ -2537,7 +2543,7 @@ export const symbols = {
   },
   /** duckdb_file_open_options_set_flag(options: duckdb_file_open_options, flag: duckdb_file_flag, value: _Bool): duckdb_state */
   duckdb_file_open_options_set_flag: {
-    parameters: [duckdb_file_open_options, buffer, u8],
+    parameters: [duckdb_file_open_options, duckdb_file_flag, u8],
     result: duckdb_state,
   },
   /** duckdb_destroy_file_open_options(options: duckdb_file_open_options *): void */
@@ -2617,7 +2623,7 @@ export const symbols = {
   },
   /** duckdb_config_option_set_default_scope(option: duckdb_config_option, default_scope: duckdb_config_option_scope): void */
   duckdb_config_option_set_default_scope: {
-    parameters: [duckdb_config_option, buffer],
+    parameters: [duckdb_config_option, duckdb_config_option_scope],
     result: "void",
   },
   /** duckdb_config_option_set_description(option: duckdb_config_option, description: const char *): void */
@@ -2838,7 +2844,7 @@ export const symbols = {
     parameters: [
       duckdb_catalog,
       duckdb_client_context,
-      buffer,
+      duckdb_catalog_entry_type,
       pointer,
       pointer,
     ],
@@ -2893,5 +2899,10 @@ export const symbols = {
   duckdb_register_log_storage: {
     parameters: [duckdb_database, duckdb_log_storage],
     result: duckdb_state,
+  },
+  /** duckdb_geometry_type_get_crs(type: duckdb_logical_type): char * */
+  duckdb_geometry_type_get_crs: {
+    parameters: [duckdb_logical_type],
+    result: pointer,
   },
 } as const;
